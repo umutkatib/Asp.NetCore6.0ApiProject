@@ -1,0 +1,12 @@
+﻿namespace ApiProjectCamp.WebApi.Entities
+{
+	public class Testimonial
+	{
+		public int TestimonialID { get; set; }
+		public string TestimonialNameSurname { get; set; }
+		public string TestimonialTitle { get; set; }
+		public string TestimonialComment { get; set; }
+		public string TestimonialImageURl { get; set; }
+		public bool TestimonialStatus { get; set; }
+	}
+}
