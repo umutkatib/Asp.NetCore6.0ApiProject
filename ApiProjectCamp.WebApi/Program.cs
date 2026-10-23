@@ -1,6 +1,19 @@
+using ApiProjectCamp.WebApi.Context;
+using ApiProjectCamp.WebApi.Dtos.ProductDtos;
+using ApiProjectCamp.WebApi.Entities;
+using ApiProjectCamp.WebApi.ValidationRules.ProductRules;
+using FluentValidation;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddDbContext<ApiContext>();
+
+builder.Services.AddScoped<IValidator<CreateProductDto>, CreateProductValidator>();
+builder.Services.AddScoped<IValidator<UpdateProductDto>, UpdateProductValidator>();
+
+builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

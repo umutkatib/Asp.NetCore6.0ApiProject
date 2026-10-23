@@ -207,7 +207,7 @@ namespace ApiProjectCamp.WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductID"), 1L, 1);
 
-                    b.Property<int>("CategoryID")
+                    b.Property<int?>("CategoryID")
                         .HasColumnType("int");
 
                     b.Property<string>("ProductDescription")
@@ -341,9 +341,7 @@ namespace ApiProjectCamp.WebApi.Migrations
                 {
                     b.HasOne("ApiProjectCamp.WebApi.Entities.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("CategoryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoryID");
 
                     b.Navigation("Category");
                 });

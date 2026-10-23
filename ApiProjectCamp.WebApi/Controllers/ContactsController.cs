@@ -1,0 +1,71 @@
+﻿using ApiProjectCamp.WebApi.Context;
+using ApiProjectCamp.WebApi.Dtos.ContactDtos;
+using ApiProjectCamp.WebApi.Entities;
+using Microsoft.AspNetCore.Mvc;
+
+namespace ApiProjectCamp.WebApi.Controllers
+{
+	[Route("api/[controller]")]
+	[ApiController]
+	public class ContactsController : ControllerBase
+	{
+		private readonly ApiContext _context;
+
+		public ContactsController(ApiContext context)
+		{
+			_context = context;
+		}
+
+		[HttpGet]
+		public IActionResult ContactList()
+		{
+			return Ok(_context.Contacts.ToList());
+		}
+
+		// MANUEL MAPPING
+		[HttpPost]
+		public IActionResult ContactCrate(CreateContactDto createContactDto)
+		{
+			_context.Contacts.Add(new Contact()
+			{
+				ContactMapLocation = createContactDto.ContactMapLocation,
+				ContactAddress = createContactDto.ContactAddress,
+				ContactEmail = createContactDto.ContactEmail,
+				ContactOpenHours = createContactDto.ContactOpenHours,	
+				ContactPhone = createContactDto.ContactPhone
+			});
+			_context.SaveChanges();
+			return Ok();
+		}
+
+		[HttpDelete]
+		public IActionResult ContactDelete(int id)
+		{
+			_context.Remove(_context.Contacts.Find(id));
+			_context.SaveChanges();
+			return Ok();
+		}
+
+		[HttpPut]
+		public IActionResult ContactUpdate(UpdateContactDto updateContactDto)
+		{
+			_context.Contacts.Update(new Contact()
+			{
+				ContactMapLocation = updateContactDto.ContactMapLocation,
+				ContactAddress = updateContactDto.ContactAddress,
+				ContactEmail = updateContactDto.ContactEmail,
+				ContactOpenHours = updateContactDto.ContactOpenHours,
+				ContactPhone = updateContactDto.ContactPhone,
+				ContactID = updateContactDto.ContactID,
+			}); 
+			_context.SaveChanges();
+			return Ok();
+		}
+
+		[HttpGet("{id}")]
+		public IActionResult ContactGet(int id)
+		{
+			return Ok(_context.Contacts.Find(id));
+		}
+	}
+}
