@@ -1,5 +1,7 @@
 ﻿using ApiProjectCamp.WebApi.Context;
+using ApiProjectCamp.WebApi.Dtos.CategoryDtos;
 using ApiProjectCamp.WebApi.Entities;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiProjectCamp.WebApi.Controllers
@@ -9,22 +11,28 @@ namespace ApiProjectCamp.WebApi.Controllers
 	public class CategoriesController : ControllerBase
 	{
 		private readonly ApiContext _context;
+		private readonly IMapper _mapper;
 
-		public CategoriesController(ApiContext context)
+		public CategoriesController(ApiContext context, IMapper mapper)
 		{
 			_context = context;
+			_mapper = mapper;
 		}
 
 		[HttpGet]
 		public IActionResult Index()
 		{
-			return Ok(_context.Categories.ToList());
+			//return Ok(_context.Categories.ToList());
+			return Ok(_mapper.Map<List<ResultCategoryDto>>(_context.Categories.ToList()));
 		}
 
 		[HttpPost]
-		public IActionResult CategoryCreate(Category category)
+		public IActionResult CategoryCreate(CreateCategoryDto createCategoryDto)
 		{
-			_context.Categories.Add(category);
+			//_context.Categories.Add(category);
+			//_context.SaveChanges();
+			var value = _mapper.Map<Category>(createCategoryDto);
+			_context.Categories.Add(value);
 			_context.SaveChanges();
 			return Ok();
 		}
@@ -38,9 +46,12 @@ namespace ApiProjectCamp.WebApi.Controllers
 		}
 
 		[HttpPut]
-		public IActionResult CategoryUpdate(Category category)
+		public IActionResult CategoryUpdate(UpdateCategoryDto updateCategoryDto)
 		{
-			_context.Categories.Update(category);
+			//_context.Categories.Update(category);
+			//_context.SaveChanges();
+			var value = _mapper.Map<Category>(updateCategoryDto);
+			_context.Categories.Update(value);
 			_context.SaveChanges();
 			return Ok();
 		}
@@ -48,7 +59,7 @@ namespace ApiProjectCamp.WebApi.Controllers
 		[HttpGet("{id}")]
 		public IActionResult CategoryGet(int id)
 		{
-			return Ok(_context.Categories.Find(id));
+			return Ok(_mapper.Map<ResultCategoryDto>(_context.Categories.Find(id)));
 		}
 	}
 }
