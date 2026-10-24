@@ -337,6 +337,37 @@ namespace ApiProjectCamp.WebApi.Migrations
                     b.ToTable("Testimonials");
                 });
 
+            modelBuilder.Entity("ApiProjectCamp.WebApi.Entities.YummyEvent", b =>
+                {
+                    b.Property<int>("YummyEventID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("YummyEventID"), 1L, 1);
+
+                    b.Property<string>("YummyEventDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("YummyEventImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("YummyEventPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("YummyEventStatus")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("YummyEventTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("YummyEventID");
+
+                    b.ToTable("YummyEvents");
+                });
+
             modelBuilder.Entity("ApiProjectCamp.WebApi.Entities.Product", b =>
                 {
                     b.HasOne("ApiProjectCamp.WebApi.Entities.Category", "Category")

@@ -8,6 +8,7 @@ using ApiProjectCamp.WebApi.Dtos.ProductDtos;
 using ApiProjectCamp.WebApi.Dtos.ReservationDtos;
 using ApiProjectCamp.WebApi.Dtos.ServiceDtos;
 using ApiProjectCamp.WebApi.Dtos.TestimonialDtos;
+using ApiProjectCamp.WebApi.Dtos.YummyEvent;
 using ApiProjectCamp.WebApi.Entities;
 using AutoMapper;
 
@@ -79,6 +80,12 @@ namespace ApiProjectCamp.WebApi.Mapping
 			CreateMap<Testimonial, CreateTestimonialDto>().ReverseMap();
 			CreateMap<Testimonial, UpdateTestimonialDto>().ReverseMap();
 			CreateMap<Testimonial, GetTestimonialDto>().ReverseMap();
+
+			//	YUMMY MAPPING
+			CreateMap<YummyEvent, ResultYummyEventDto>().ReverseMap();
+			CreateMap<YummyEvent, CreateYummyEventDto>().ReverseMap();
+			CreateMap<YummyEvent, UpdateYummyEventDto>().ReverseMap();
+			CreateMap<YummyEvent, GetYummyEventDto>().ReverseMap();
 		}
 	}
 }
