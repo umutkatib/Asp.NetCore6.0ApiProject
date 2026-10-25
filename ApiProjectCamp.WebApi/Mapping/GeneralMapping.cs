@@ -1,9 +1,11 @@
-﻿using ApiProjectCamp.WebApi.Dtos.CategoryDtos;
+﻿using ApiProjectCamp.WebApi.Dtos.AboutDtos;
+using ApiProjectCamp.WebApi.Dtos.CategoryDtos;
 using ApiProjectCamp.WebApi.Dtos.ChefDtos;
 using ApiProjectCamp.WebApi.Dtos.ContactDtos;
 using ApiProjectCamp.WebApi.Dtos.FeatureDtos;
 using ApiProjectCamp.WebApi.Dtos.ImageDtos;
 using ApiProjectCamp.WebApi.Dtos.MessageDtos;
+using ApiProjectCamp.WebApi.Dtos.NotificationDtos;
 using ApiProjectCamp.WebApi.Dtos.ProductDtos;
 using ApiProjectCamp.WebApi.Dtos.ReservationDtos;
 using ApiProjectCamp.WebApi.Dtos.ServiceDtos;
@@ -86,6 +88,18 @@ namespace ApiProjectCamp.WebApi.Mapping
 			CreateMap<YummyEvent, CreateYummyEventDto>().ReverseMap();
 			CreateMap<YummyEvent, UpdateYummyEventDto>().ReverseMap();
 			CreateMap<YummyEvent, GetYummyEventDto>().ReverseMap();
+
+			//	NOTIFICATION MAPPING
+			CreateMap<Notification, ResultNotificationDto>().ReverseMap();
+			CreateMap<Notification, CreateNotificationDto>().ReverseMap();
+			CreateMap<Notification, UpdateNotificationDto>().ReverseMap();
+			CreateMap<Notification, GetNotificationDto>().ReverseMap();
+
+			//	ABOUT MAPPING
+			CreateMap<About, ResultAboutDto>().ReverseMap();
+			CreateMap<About, CreateAboutDto>().ReverseMap();
+			CreateMap<About, UpdateAboutDto>().ReverseMap();
+			CreateMap<About, GetAboutDto>().ReverseMap();
 		}
 	}
 }
