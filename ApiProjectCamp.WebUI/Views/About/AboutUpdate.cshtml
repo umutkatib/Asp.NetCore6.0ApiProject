@@ -1,0 +1,64 @@
+﻿@model UpdateAboutDto
+
+@{
+    ViewData["Title"] = "Hakkımızda Güncelleme";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Hakkımızda Güncelle</h4>
+                    <a href="/About/AboutList" class="btn btn-light">
+                        <i class="fas fa-arrow-left"></i> Listeye Dön
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger">@ViewBag.Error</div>
+                    }
+
+                    <form method="post" asp-action="AboutUpdate" asp-controller="About">
+                        <input type="hidden" asp-for="AboutID" />
+                        <div class="form-group mb-3">
+                            <label asp-for="AboutTitle">Başlık</label>
+                            <input asp-for="AboutTitle" class="form-control" />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="AboutDescription">Açıklama</label>
+                            <textarea asp-for="AboutDescription" class="form-control" rows="5"></textarea>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="AboutImageUrl">Görsel URL</label>
+                            <input asp-for="AboutImageUrl" class="form-control" />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="AboutVideoCoverImageUrl">Video Kapak Görseli URL</label>
+                            <input asp-for="AboutVideoCoverImageUrl" class="form-control" />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="AboutVideoUrl">Video URL</label>
+                            <input asp-for="AboutVideoUrl" class="form-control" />
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="AboutReservationNumber">Rezervasyon Numarası</label>
+                            <input asp-for="AboutReservationNumber" class="form-control" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Güncelle
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

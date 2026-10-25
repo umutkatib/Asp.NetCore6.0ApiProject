@@ -1,0 +1,44 @@
+﻿@model CreateFeatureDto
+
+@{
+    ViewData["Title"] = "Yeni Kayıt";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-10 col-md-10 col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Yeni Öne Çıkan Alan Ekle</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="FeatureCreate" method="post">
+                        <div class="form-group">
+                            <label asp-for="FeatureTitle">Başlık</label>
+                            <input asp-for="FeatureTitle" class="form-control" placeholder="Örn: Sağlıklı ve Lezzetli Yemeğin Keyfini Çıkarın" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="FeatureSubTitle">Alt Başlık</label>
+                            <input asp-for="FeatureSubTitle" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="FeatureDescription">Açıklama</label>
+                            <textarea asp-for="FeatureDescription" class="form-control" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="FeatureImageUrl">Görsel Yolu</label>
+                            <input asp-for="FeatureImageUrl" class="form-control" placeholder="/yummy-red-1.0.0/assets/img/hero-img.png" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="FeatureVideoUrl">Video Bağlantısı</label>
+                            <input asp-for="FeatureVideoUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=..." />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <a href="/Feature/FeatureList" class="btn btn-secondary">Vazgeç</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

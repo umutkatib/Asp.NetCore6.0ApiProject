@@ -35,7 +35,7 @@ namespace ApiProjectCamp.WebApi.Controllers
 			return Ok();
 		}
 
-		[HttpDelete]
+		[HttpDelete("{id}")]
 		public IActionResult MessageDelete(int id)
 		{
 			_context.Messages.Remove(_context.Messages.Find(id));
@@ -59,6 +59,14 @@ namespace ApiProjectCamp.WebApi.Controllers
 		{
 			var value = _context.Messages.Find(id);
 			return Ok(_mapper.Map<Message>(value));
+		}
+
+		[HttpGet("MessageListIsReadFalse")]
+		public IActionResult MessageListIsReadFalse()
+		{
+			var value = _mapper.Map<List<Message>>
+				(_context.Messages.Where(x => x.MessageStatus == false).ToList());
+			return Ok(value);
 		}
 	}
 }

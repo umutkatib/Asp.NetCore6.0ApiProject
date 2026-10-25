@@ -1,0 +1,47 @@
+﻿@model UpdateProductDto
+
+@{
+    ViewData["Title"] = "Ürün Güncelleme";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-10 col-md-10 col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Ürün Güncelle</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ProductUpdate" method="post">
+                        <input type="hidden" asp-for="CategoryID" />
+                        <div class="form-group">
+                            <label asp-for="ProductName">Ürün Adı</label>
+                            <input asp-for="ProductName" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ProductDescription">Açıklama</label>
+                            <textarea asp-for="ProductDescription" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ProductPrice">Fiyat (₺)</label>
+                            <input asp-for="ProductPrice" type="number" step="0.01" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ProductImageURl">Görsel Yolu</label>
+                            <input asp-for="ProductImageURl" class="form-control" placeholder="/yummy-red-1.0.0/assets/img/menu/menu-item-1.png" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="CategoryID">Kategori</label>
+                            <select asp-for="CategoryID" class="form-control" asp-items="@((List<SelectListItem>)ViewBag.categoryValues)">
+                                <option value="">Kategori seçin</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Güncelle</button>
+                        <a href="/Product/ProductList" class="btn btn-secondary">Vazgeç</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

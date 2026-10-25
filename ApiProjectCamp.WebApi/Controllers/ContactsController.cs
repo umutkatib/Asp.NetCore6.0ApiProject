@@ -38,7 +38,7 @@ namespace ApiProjectCamp.WebApi.Controllers
 			return Ok();
 		}
 
-		[HttpDelete]
+		[HttpDelete("{id}")]
 		public IActionResult ContactDelete(int id)
 		{
 			_context.Remove(_context.Contacts.Find(id));

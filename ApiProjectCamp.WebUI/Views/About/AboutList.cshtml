@@ -1,0 +1,75 @@
+﻿@model List<ResultAboutDto>
+
+@{
+    ViewData["Title"] = "Hakkımızda";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Hakkımızda</h4>
+                    @if (Model == null || !Model.Any())
+                    {
+                        <a href="/About/AboutCreate" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Yeni Hakkımızda Ekle
+                        </a>
+                    }
+                </div>
+                <div class="card-body">
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="alert alert-info mb-0">Henüz kayıt eklenmemiş.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Görsel</th>
+                                        <th>Video Kapak</th>
+                                        <th>Başlık</th>
+                                        <th>Açıklama</th>
+                                        <th>Rezervasyon No</th>
+                                        <th>Video</th>
+                                        <th class="text-center">İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <img src="@item.AboutImageUrl" alt="@item.AboutTitle"
+                                                     style="width:70px;height:50px;object-fit:cover;border-radius:6px;" />
+                                            </td>
+                                            <td>
+                                                <img src="@item.AboutVideoCoverImageUrl" alt="@item.AboutTitle"
+                                                     style="width:70px;height:50px;object-fit:cover;border-radius:6px;" />
+                                            </td>
+                                            <td>@item.AboutTitle</td>
+                                            <td>@item.AboutDescription</td>
+                                            <td>@item.AboutReservationNumber</td>
+                                            <td>
+                                                <a href="@item.AboutVideoUrl" target="_blank" rel="noopener" class="btn btn-sm btn-light">
+                                                    <i class="fas fa-play-circle"></i> İzle
+                                                </a>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="/About/AboutUpdate/@item.AboutID" class="btn btn-sm btn-warning">Güncelle</a>
+                                                <a href="/About/AboutDelete/@item.AboutID" class="btn btn-sm btn-danger">Sil</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

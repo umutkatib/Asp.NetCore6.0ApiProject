@@ -29,13 +29,17 @@ namespace ApiProjectCamp.WebApi.Controllers
 		[HttpPost]
 		public IActionResult FeatureCreate(CreateFeatureDto createFeatureDto)
 		{
+			if(_context.Features.Any())
+			{
+				return BadRequest("Zaten bir kayıt mevcut, yeni kayıt eklenemez.");
+			}
 			var value = _mapper.Map<Feature>(createFeatureDto);
 			_context.Features.Add(value);
 			_context.SaveChanges();
 			return Ok();
 		}
 
-		[HttpDelete]
+		[HttpDelete("{id}")]
 		public IActionResult FeatureDelete(int id)
 		{
 			_context.Features.Remove(_context.Features.Find(id));

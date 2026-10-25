@@ -31,13 +31,15 @@ namespace ApiProjectCamp.WebApi.Controllers
 		{
 			//_context.Categories.Add(category);
 			//_context.SaveChanges();
+
+			createCategoryDto.CategoryStatus = true;
 			var value = _mapper.Map<Category>(createCategoryDto);
 			_context.Categories.Add(value);
 			_context.SaveChanges();
 			return Ok();
 		}
 
-		[HttpDelete]
+		[HttpDelete("{id}")]
 		public IActionResult CategoryDelete(int id)
 		{
 			_context.Categories.Remove(_context.Categories.Find(id));
@@ -50,6 +52,8 @@ namespace ApiProjectCamp.WebApi.Controllers
 		{
 			//_context.Categories.Update(category);
 			//_context.SaveChanges();
+
+			updateCategoryDto.CategoryStatus = true;
 			var value = _mapper.Map<Category>(updateCategoryDto);
 			_context.Categories.Update(value);
 			_context.SaveChanges();
@@ -60,6 +64,15 @@ namespace ApiProjectCamp.WebApi.Controllers
 		public IActionResult CategoryGet(int id)
 		{
 			return Ok(_mapper.Map<ResultCategoryDto>(_context.Categories.Find(id)));
+		}
+
+		[HttpGet("CategoryChangeStatus/{id}")]
+		public IActionResult CategoryChangeStatus(int id)
+		{
+			var value = _context.Categories.Find(id);
+			value.CategoryStatus = !value.CategoryStatus;
+			_context.SaveChanges();
+			return Ok();
 		}
 	}
 }

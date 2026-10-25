@@ -37,7 +37,7 @@ namespace ApiProjectCamp.WebApi.Controllers
 			return Ok();
 		}
 
-		[HttpDelete]
+		[HttpDelete("{id}")]
 		public IActionResult TestimonialDelete(int id)
 		{
 			var value = _context.Testimonials.Find(id);

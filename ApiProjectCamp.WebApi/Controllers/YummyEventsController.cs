@@ -36,7 +36,7 @@ namespace ApiProjectCamp.WebApi.Controllers
 			return Ok();
 		}
 
-		[HttpDelete]
+		[HttpDelete("{id}")]
 		public IActionResult YummyEventDelete(int id)
 		{
 			var value = _context.YummyEvents.Find(id);

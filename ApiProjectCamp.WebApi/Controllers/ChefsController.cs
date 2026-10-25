@@ -29,7 +29,7 @@ namespace ApiProjectCamp.WebApi.Controllers
 			return Ok();
 		}
 
-		[HttpDelete]
+		[HttpDelete("{id}")]
 		public IActionResult ChefDelete(int id)
 		{
 			_context.Chefs.Remove(_context.Chefs.Find(id));

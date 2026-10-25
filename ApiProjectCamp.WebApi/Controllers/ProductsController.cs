@@ -49,7 +49,7 @@ namespace ApiProjectCamp.WebApi.Controllers
 			}
 		}
 
-		[HttpDelete]
+		[HttpDelete("{id}")]
 		public IActionResult ProductDelete(int id)
 		{
 			_context.Products.Remove(_context.Products.Find(id));
@@ -87,6 +87,24 @@ namespace ApiProjectCamp.WebApi.Controllers
 		{
 			var value = _context.Products.Include(x => x.Category).ToList();
 			return Ok(_mapper.Map<List<ResultProductWithCategoryNameDto>>(value));
+		}
+
+		[HttpPost("CreateProductWithCategoryName")]
+		public IActionResult CreateProductWithCategoryName(CreateProductDto createProductDto)
+		{
+			var value = _mapper.Map<Product>(createProductDto);
+			_context.Products.Add(value);
+			_context.SaveChanges();
+			return Ok();
+		}
+
+		[HttpGet("ProductChangeStatus/{id}")]
+		public IActionResult ProductChangeStatus(int id)
+		{
+			var value = _context.Products.Find(id);
+			value.ProductStatus = !value.ProductStatus;
+			_context.SaveChanges();
+			return Ok();
 		}
 	}
 }
