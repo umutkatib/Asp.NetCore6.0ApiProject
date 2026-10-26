@@ -1,8 +1,7 @@
-﻿namespace ApiProjectCamp.WebUI.Dtos.YummyEvent
+﻿namespace ApiProjectCamp.WebUI.Dtos.YummyEventDtos
 {
-	public class UpdateYummyEventDto
+	public class CreateYummyEventDto
 	{
-		public int YummyEventID { get; set; }
 		public string YummyEventTitle { get; set; }
 		public string YummyEventDescription { get; set; }
 		public string YummyEventImageUrl { get; set; }

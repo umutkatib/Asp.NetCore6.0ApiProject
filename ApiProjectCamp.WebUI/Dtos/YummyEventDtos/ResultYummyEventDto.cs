@@ -1,4 +1,4 @@
-﻿namespace ApiProjectCamp.WebUI.Dtos.YummyEvent
+﻿namespace ApiProjectCamp.WebUI.Dtos.YummyEventDtos
 {
 	public class ResultYummyEventDto
 	{

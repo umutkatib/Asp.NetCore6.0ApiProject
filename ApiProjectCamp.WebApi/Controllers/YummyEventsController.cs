@@ -27,9 +27,11 @@ namespace ApiProjectCamp.WebApi.Controllers
 			return Ok(_mapper.Map<List<ResultYummyEventDto>>(_context.YummyEvents.ToList()));
 		}
 
+
 		[HttpPost]
 		public IActionResult YummyEventCreate(CreateYummyEventDto createYummyEventDto)
 		{
+			createYummyEventDto.YummyEventStatus = true;
 			var value = _mapper.Map<YummyEvent>(createYummyEventDto);
 			_context.YummyEvents.Add(value);
 			_context.SaveChanges();
@@ -48,6 +50,7 @@ namespace ApiProjectCamp.WebApi.Controllers
 		[HttpPut]
 		public IActionResult YummyEventUpdate(UpdateYummyEventDto updateYummyEventDto)
 		{
+			updateYummyEventDto.YummyEventStatus = true;
 			var value = _mapper.Map<YummyEvent>(updateYummyEventDto);
 			_context.YummyEvents.Update(value);
 			_context.SaveChanges();
@@ -58,6 +61,21 @@ namespace ApiProjectCamp.WebApi.Controllers
 		public IActionResult YummyEventGet(int id)
 		{
 			return Ok(_mapper.Map<GetYummyEventDto>(_context.YummyEvents.Find(id)));
+		}
+
+		[HttpGet("YummyEventActiveList")]
+		public IActionResult YummyEventActiveList()
+		{
+			return Ok(_mapper.Map<List<ResultYummyEventDto>>(_context.YummyEvents.Where(x => x.YummyEventStatus).ToList()));
+		}
+
+		[HttpGet("YummyEventChangeStatus/{id}")]
+		public IActionResult YummyEventChangeStatus(int id)
+		{
+			var value = _context.YummyEvents.Find(id);
+			value.YummyEventStatus = !value.YummyEventStatus;
+			_context.SaveChanges();
+			return Ok();
 		}
 	}
 }

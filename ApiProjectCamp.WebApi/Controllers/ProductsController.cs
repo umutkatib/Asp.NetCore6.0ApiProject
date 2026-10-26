@@ -35,6 +35,7 @@ namespace ApiProjectCamp.WebApi.Controllers
 		[HttpPost]
 		public IActionResult ProductCreate(CreateProductDto createProductDto)
 		{
+			createProductDto.ProductStatus = true;
 			var validationResult = _createProductValidator.Validate(createProductDto);
 			if (!validationResult.IsValid)
 			{
@@ -60,6 +61,7 @@ namespace ApiProjectCamp.WebApi.Controllers
 		[HttpPut]
 		public IActionResult ProductUpdate(UpdateProductDto updateProductDto)
 		{
+			updateProductDto.ProductStatus = true;
 			var validationResult = _updateProductValidator.Validate(updateProductDto);
 			if (!validationResult.IsValid)
 			{

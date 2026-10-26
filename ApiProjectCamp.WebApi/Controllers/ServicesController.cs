@@ -32,6 +32,10 @@ namespace ApiProjectCamp.WebApi.Controllers
 		[HttpPost]
 		public IActionResult ServiceCreate(CreateServiceDto createServiceDto)
 		{
+			if (_context.Services.Count() >= 3)
+			{
+				return BadRequest("Zaten üç adet kayıt mevcut, yeni kayıt eklenemez.");
+			}
 			var value = _mapper.Map<Service>(createServiceDto);
 			_context.Services.Add(value);
 			_context.SaveChanges();
