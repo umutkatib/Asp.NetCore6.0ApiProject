@@ -4,6 +4,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,21 +35,7 @@ namespace ApiProjectCamp.WebUI.Controllers
 		[HttpGet]
 		public async Task<IActionResult> ProductCreate()
 		{
-			var client = _httpClientFactory.CreateClient();
-			var responseMessage = await client.GetAsync("https://localhost:7246/api/Categories");
-			if(responseMessage.IsSuccessStatusCode)
-			{
-				var jsonData = await responseMessage.Content.ReadAsStringAsync();
-				var values = JsonConvert.DeserializeObject<List<ResultCategoryDto>>(jsonData);
-
-				List<SelectListItem> categoryValues = (from x in values
-												select new SelectListItem
-												{
-													Text = x.CategoryName,
-													Value = x.CategoryID.ToString()
-												}).ToList();
-				ViewBag.categoryValues = categoryValues;
-			}
+			await LoadProductsAsync();
 			return View();
 		}
 		[HttpPost]
@@ -81,6 +68,8 @@ namespace ApiProjectCamp.WebUI.Controllers
 		[HttpGet]
 		public async Task<IActionResult> ProductUpdate(int id)
 		{
+			await LoadProductsAsync();
+
 			var client = _httpClientFactory.CreateClient();
 			var responseMessage = await client.GetAsync($"https://localhost:7246/api/Products/{id}");
 			if (responseMessage.IsSuccessStatusCode)
@@ -103,6 +92,23 @@ namespace ApiProjectCamp.WebUI.Controllers
 				return RedirectToAction("ProductList");
 			}
 			return View();
+		}
+
+		private async Task LoadProductsAsync()
+		{
+			var client = _httpClientFactory.CreateClient();
+			var responseMessage = await client.GetAsync("https://localhost:7246/api/Categories");
+			var jsonData = await responseMessage.Content.ReadAsStringAsync();
+			var values = JsonConvert.DeserializeObject<List<ResultProductWithCategoryNameDto>>(jsonData);
+
+			List<SelectListItem> categoryValues = (from x in values
+												   select new SelectListItem
+												   {
+													   Text = x.CategoryName,
+													   Value = x.CategoryID.ToString()
+												   }).ToList();
+
+			ViewBag.categoryValues = categoryValues;
 		}
 
 		public async Task<IActionResult> ProductChangeStatus(int id)

@@ -1,0 +1,44 @@
+﻿@model UpdateYummyEventDto
+
+@{
+    ViewData["Title"] = "Etkinlik Güncelle";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-10 col-md-10 col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Etkinlik Güncelle</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-danger mb-3">@ViewBag.Error</div>
+
+                    <form asp-action="YummyEventUpdate" method="post">
+                        <input type="hidden" asp-for="YummyEventID" />
+
+                        <div class="form-group">
+                            <label asp-for="YummyEventTitle">Başlık</label>
+                            <input asp-for="YummyEventTitle" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="YummyEventDescription">Açıklama</label>
+                            <textarea asp-for="YummyEventDescription" class="form-control" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="YummyEventPrice">Fiyat (₺)</label>
+                            <input asp-for="YummyEventPrice" type="number" step="0.01" min="0" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="YummyEventImageUrl">Görsel Yolu</label>
+                            <input asp-for="YummyEventImageUrl" class="form-control" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Güncelle</button>
+                        <a href="/YummyEvent/YummyEventList" class="btn btn-secondary">Vazgeç</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

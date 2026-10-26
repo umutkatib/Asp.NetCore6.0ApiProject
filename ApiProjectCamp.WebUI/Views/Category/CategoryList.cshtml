@@ -46,12 +46,18 @@
                                                     @(item.CategoryStatus ? "Aktif" : "Pasif")
                                                 </span>
                                             </td>
-                                            <td class="text-center">
-                                                <a href="/Category/CategoryUpdate/@item.CategoryID" class="btn btn-sm btn-warning">Güncelle</a>
-                                                <a href="/Category/CategoryChangeStatus/@item.CategoryID" class="btn btn-sm btn-info">
-                                                    @(item.CategoryStatus ? "Pasif Yap" : "Aktif Yap")
+                                            <td class="text-center text-nowrap">
+                                                <a href="/Category/CategoryUpdate/@item.CategoryID" class="btn btn-sm btn-warning" title="Güncelle">
+                                                    <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="/Category/CategoryDelete/@item.CategoryID" class="btn btn-sm btn-danger">Sil</a>
+                                                <a href="/Category/CategoryChangeStatus/@item.CategoryID"
+                                                   class="btn btn-sm @(item.CategoryStatus ? "btn-secondary" : "btn-success")"
+                                                   title="@(item.CategoryStatus ? "Pasif Yap" : "Aktif Yap")">
+                                                    <i class="fas @(item.CategoryStatus ? "fa-eye-slash" : "fa-eye")"></i>
+                                                </a>
+                                                <a href="/Category/CategoryDelete/@item.CategoryID" class="btn btn-sm btn-danger" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     }

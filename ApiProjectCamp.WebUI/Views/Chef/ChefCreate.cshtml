@@ -1,0 +1,42 @@
+﻿@model CreateChefDto
+
+@{
+    ViewData["Title"] = "Yeni Şef";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-10 col-md-10 col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Yeni Şef Ekle</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-danger mb-3">@ViewBag.Error</div>
+
+                    <form asp-action="ChefCreate" method="post">
+                        <div class="form-group">
+                            <label asp-for="ChefNameSurname">Ad Soyad</label>
+                            <input asp-for="ChefNameSurname" class="form-control" placeholder="Örn: Mustafa Aydın" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ChefTitle">Unvan</label>
+                            <input asp-for="ChefTitle" class="form-control" placeholder="Örn: Baş Şef" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ChefDescription">Açıklama</label>
+                            <textarea asp-for="ChefDescription" class="form-control" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ChefImageUrl">Görsel Yolu</label>
+                            <input asp-for="ChefImageUrl" class="form-control" placeholder="/yummy-red-1.0.0/assets/img/chefs/chefs-1.jpg" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <a href="/Chef/ChefList" class="btn btn-secondary">Vazgeç</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

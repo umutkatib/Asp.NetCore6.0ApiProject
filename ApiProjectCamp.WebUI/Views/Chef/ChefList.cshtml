@@ -1,0 +1,80 @@
+﻿@model List<ResultChefDto>
+
+@{
+    ViewData["Title"] = "Şefler";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+    int count = 0;
+}
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Şefler</h4>
+                    <a href="/Chef/ChefCreate" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Yeni Şef Ekle
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="alert alert-info mb-0">Henüz şef eklenmemiş.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Görsel</th>
+                                        <th>Ad Soyad</th>
+                                        <th>Unvan</th>
+                                        <th>Açıklama</th>
+                                        <th>Durumu</th>
+                                        <th class="text-center">İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        count++;
+                                        <tr>
+                                            <th scope="row">@count</th>
+                                            <td>
+                                                <img src="@item.ChefImageUrl" alt="@item.ChefNameSurname"
+                                                     style="width:50px;height:50px;object-fit:cover;border-radius:50%;" />
+                                            </td>
+                                            <td>@item.ChefNameSurname</td>
+                                            <td>@item.ChefTitle</td>
+                                            <td>@item.ChefDescription</td>
+                                            <td>
+                                                <span class="badge @(item.ChefStatus ? "badge-success" : "badge-secondary")">
+                                                    @(item.ChefStatus ? "Aktif" : "Pasif")
+                                                </span>
+                                            </td>
+                                            <td class="text-center text-nowrap">
+                                                <a href="/Chef/ChefUpdate/@item.ChefID" class="btn btn-sm btn-warning" title="Güncelle">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="/Chef/ChefChangeStatus/@item.ChefID"
+                                                   class="btn btn-sm @(item.ChefStatus ? "btn-secondary" : "btn-success")"
+                                                   title="@(item.ChefStatus ? "Pasif Yap" : "Aktif Yap")">
+                                                    <i class="fas @(item.ChefStatus ? "fa-eye-slash" : "fa-eye")"></i>
+                                                </a>
+                                                <a href="/Chef/ChefDelete/@item.ChefID" class="btn btn-sm btn-danger" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

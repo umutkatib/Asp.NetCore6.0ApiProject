@@ -1,0 +1,38 @@
+﻿@model CreateWhyChooseYummyDto
+
+@{
+    ViewData["Title"] = "Yeni Yummy Kayıt";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-10 col-md-10 col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Yeni Yummy Ekle</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-danger mb-3">@ViewBag.Error</div>
+
+                    <form asp-action="WhyChooseYummyCreate" method="post">
+                        <div class="form-group">
+                            <label asp-for="ServiceTitle">Başlık</label>
+                            <input asp-for="ServiceTitle" class="form-control" placeholder="Örn: Taze Malzeme" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ServiceDescription">Açıklama</label>
+                            <textarea asp-for="ServiceDescription" class="form-control" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ServiceIconUrl">İkon Sınıfı</label>
+                            <input asp-for="ServiceIconUrl" class="form-control" placeholder="bi bi-gem" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <a href="/WhyChooseYummy/WhyChooseYummyList" class="btn btn-secondary">Vazgeç</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
