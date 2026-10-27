@@ -1,0 +1,80 @@
+﻿@model List<ResultReservationDto>
+
+@{
+    ViewData["Title"] = "Rezervasyonlar";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Rezervasyon Listesi</h4>
+                    <a href="/Reservation/ReservationCreate" class="btn btn-primary">Yeni Rezervasyon</a>
+                </div>
+                <div class="card-body">
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="alert alert-info text-center mb-0">
+                            Henüz kayıtlı rezervasyon bulunmuyor.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Ad Soyad</th>
+                                        <th>Telefon</th>
+                                        <th>E-posta</th>
+                                        <th>Tarih</th>
+                                        <th>Saat</th>
+                                        <th>Kişi</th>
+                                        <th>Mesaj</th>
+                                        <th>Durum</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.ReservationID</td>
+                                            <td>@item.ReservationNameSurname</td>
+                                            <td>@item.ReservationPhone</td>
+                                            <td>@item.ReservationEmail</td>
+                                            <td>@item.ReservationDate.ToString("dd.MM.yyyy")</td>
+                                            <td>@item.ReservationTime</td>
+                                            <td>@item.ReservationCountOfPeople</td>
+                                            <td>@item.ReservationMessage</td>
+                                            <td>
+                                                <span class="badge bg-@(item.ReservationStatus ? "success" : "warning")">@(item.ReservationStatus ? "Onaylandı" : "Beklemede")</span>
+                                            </td>
+                                            
+                                            <td class="text-center text-nowrap">
+                                                <a href="/Reservation/ReservationUpdate/@item.ReservationID" class="btn btn-sm btn-primary" title="Güncelle">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="/Reservation/ReservationChangeStatus/@item.ReservationID"
+                                                   class="btn btn-sm @(item.ReservationStatus ? "btn-secondary" : "btn-success")"
+                                                   title="@(item.ReservationStatus ? "İptal Et" : "Onayla")">
+                                                    <i class="fas @(item.ReservationStatus ? "fa-eye-slash" : "fa-eye")"></i>
+                                                </a>
+                                                <a href="/Reservation/ReservationDelete/@item.ReservationID" class="btn btn-sm btn-danger" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

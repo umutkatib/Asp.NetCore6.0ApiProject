@@ -1,0 +1,59 @@
+﻿@model UpdateReservationDto
+
+@{
+    ViewData["Title"] = "Rezervasyon Güncelleme";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-10 col-md-10 col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Rezervasyon Güncelle</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ReservationUpdate" method="post">
+                        <input type="hidden" asp-for="ReservationID" />
+
+                        <div class="form-group">
+                            <label asp-for="ReservationNameSurname">Ad Soyad</label>
+                            <input asp-for="ReservationNameSurname" class="form-control" />
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label asp-for="ReservationPhone">Telefon</label>
+                                <input asp-for="ReservationPhone" type="tel" class="form-control" />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label asp-for="ReservationEmail">E-posta</label>
+                                <input asp-for="ReservationEmail" type="email" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label asp-for="ReservationDate">Tarih</label>
+                                <input asp-for="ReservationDate" type="date" class="form-control" />
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label asp-for="ReservationTime">Saat</label>
+                                <input asp-for="ReservationTime" type="time" class="form-control" />
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label asp-for="ReservationCountOfPeople">Kişi Sayısı</label>
+                                <input asp-for="ReservationCountOfPeople" type="number" min="1" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ReservationMessage">Mesaj</label>
+                            <textarea asp-for="ReservationMessage" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Güncelle</button>
+                        <a href="/Reservation/ReservationList" class="btn btn-secondary">Vazgeç</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
