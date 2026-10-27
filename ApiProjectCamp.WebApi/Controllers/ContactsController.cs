@@ -1,6 +1,7 @@
 ﻿using ApiProjectCamp.WebApi.Context;
 using ApiProjectCamp.WebApi.Dtos.ContactDtos;
 using ApiProjectCamp.WebApi.Entities;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiProjectCamp.WebApi.Controllers
@@ -10,22 +11,28 @@ namespace ApiProjectCamp.WebApi.Controllers
 	public class ContactsController : ControllerBase
 	{
 		private readonly ApiContext _context;
+		private readonly IMapper _mapper;
 
-		public ContactsController(ApiContext context)
+		public ContactsController(ApiContext context, IMapper mapper)
 		{
 			_context = context;
+			_mapper = mapper;
 		}
 
 		[HttpGet]
 		public IActionResult ContactList()
 		{
-			return Ok(_context.Contacts.ToList());
+			return Ok(_mapper.Map<List<ResultContactDto>>(_context.Contacts.ToList()));
 		}
 
 		// MANUEL MAPPING
 		[HttpPost]
 		public IActionResult ContactCrate(CreateContactDto createContactDto)
 		{
+			if (_context.Contacts.Any())
+			{
+				return BadRequest("Zaten bir kayıt mevcut, yeni kayıt eklenemez.");
+			}
 			_context.Contacts.Add(new Contact()
 			{
 				ContactMapLocation = createContactDto.ContactMapLocation,
