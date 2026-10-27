@@ -51,7 +51,7 @@ namespace ApiProjectCamp.WebApi.Controllers
 		}
 
 		[HttpPut]
-		public IActionResult ServiceUpdte(UpdateServiceDto updateServiceDto)
+		public IActionResult ServiceUpdate(UpdateServiceDto updateServiceDto)
 		{
 			var value = _mapper.Map<Service>(updateServiceDto);
 			_context.Services.Update(value);
