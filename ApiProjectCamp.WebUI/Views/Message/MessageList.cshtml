@@ -1,0 +1,116 @@
+﻿@model List<ResultMessageDto>
+
+@{
+    ViewData["Title"] = "Mesajlar";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<style>
+    /* Okunmamış satır: kalın yazı ve sol çizgi */
+    tr.unread-row td {
+        font-weight: 600;
+    }
+
+        tr.unread-row td:first-child {
+            border-left: 3px solid #ffc107;
+        }
+
+    /* Okunmadı rozeti yanıp söner */
+    .badge-blink {
+        animation: badgeBlink 1.4s ease-in-out infinite;
+    }
+
+    @@keyframes badgeBlink {
+        50% {
+            opacity: .45;
+        }
+    }
+
+    /* Hareketi azaltmak isteyen kullanıcılar için animasyonu kapat */
+    @@media (prefers-reduced-motion: reduce) {
+        .badge-blink {
+            animation: none;
+        }
+    }
+</style>
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Mesaj Listesi</h4>
+                    <a href="/Message/MessageCreate" class="btn btn-primary">Yeni Mesaj</a>
+                </div>
+                <div class="card-body">
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="alert alert-info text-center mb-0">
+                            Henüz mesaj bulunmuyor.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-sm align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Ad Soyad</th>
+                                        <th>E-posta</th>
+                                        <th>Konu</th>
+                                        <th>Mesaj</th>
+                                        <th>Tarih</th>
+                                        <th>Durum</th>
+                                        <th class="text-center">İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="@(item.MessageStatus ? "" : "unread-row")">
+                                            <td>@item.MessageID</td>
+                                            <td>@item.MessageNameSurname</td>
+                                            <td>@item.MessageEmail</td>
+                                            <td>@item.MessageSubject</td>
+                                            <td style="max-width:250px;" class="text-truncate" title="@item.MessageDetails">
+                                                @item.MessageDetails
+                                            </td>
+                                            <td class="text-nowrap">@item.MessageSendDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td>
+                                                @if (item.MessageStatus)
+                                                {
+                                                    <span class="badge bg-success">Okundu</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning text-dark badge-blink">Okunmadı</span>
+                                                }
+                                            </td>
+                                            <td class="text-center text-nowrap">
+                                                <a href="/Message/MessageUpdate/@item.MessageID" class="btn btn-sm btn-primary" title="Güncelle">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="/Message/MessageChangeStatus/@item.MessageID"
+                                                   class="btn btn-sm @(item.MessageStatus ? "btn-warning" : "btn-success")"
+                                                   title="@(item.MessageStatus ? "Okunmadı yap" : "Okundu yap")">
+                                                    <i class="fas @(item.MessageStatus ? "fa-undo" : "fa-check")"></i>
+                                                </a>
+                                                <a href="/Message/MessageDetail/@item.MessageID" class="btn btn-sm btn-info" title="Detay">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </a>
+                                                <a href="/Message/MessageDelete/@item.MessageID" class="btn btn-sm btn-danger" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

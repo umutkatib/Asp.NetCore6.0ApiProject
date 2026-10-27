@@ -1,0 +1,141 @@
+﻿@model GetMessageDto
+
+@{
+    ViewData["Title"] = "Mesaj Detayı";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+
+    var initial = (Model != null && !string.IsNullOrWhiteSpace(Model.MessageNameSurname))
+        ? Model.MessageNameSurname.Trim().Substring(0, 1).ToUpper()
+        : "?";
+}
+
+<style>
+    .msg-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #6777ef;
+        color: #fff;
+        font-size: 24px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .msg-info-box {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px 16px;
+        height: 100%;
+    }
+
+        .msg-info-box small {
+            display: block;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: .5px;
+            margin-bottom: 2px;
+        }
+
+    .msg-body {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-left: 4px solid #6777ef;
+        border-radius: 8px;
+        padding: 20px;
+        line-height: 1.7;
+        white-space: pre-line;
+    }
+</style>
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="fas fa-envelope-open-text mr-2"></i>Mesaj Detayı</h4>
+                    @if (Model != null)
+                    {
+                        if (Model.MessageStatus)
+                        {
+                            <span class="badge bg-success">Okundu</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Okunmadı</span>
+                        }
+                    }
+                </div>
+                <div class="card-body">
+                    @if (Model == null)
+                    {
+                        <div class="alert alert-warning text-center mb-0">
+                            Mesaj bulunamadı.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="msg-avatar mr-3">@initial</div>
+                            <div>
+                                <h5 class="mb-1">@Model.MessageSubject</h5>
+                                <span class="text-muted">
+                                    <strong>@Model.MessageNameSurname</strong> tarafından gönderildi
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-4 mb-2 mb-md-0">
+                                <div class="msg-info-box">
+                                    <small><i class="fas fa-user mr-1"></i>Gönderen</small>
+                                    <strong>@Model.MessageNameSurname</strong>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2 mb-md-0">
+                                <div class="msg-info-box">
+                                    <small><i class="fas fa-at mr-1"></i>E-posta</small>
+                                    <a href="mailto:@Model.MessageEmail">@Model.MessageEmail</a>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="msg-info-box">
+                                    <small><i class="far fa-clock mr-1"></i>Gönderim Tarihi</small>
+                                    <strong>@Model.MessageSendDate.ToString("dd.MM.yyyy HH:mm")</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 class="text-muted text-uppercase mb-2" style="font-size:12px; letter-spacing:.5px;">Mesaj</h6>
+                        <div class="msg-body">@Model.MessageDetails</div>
+
+                        <hr class="my-4" />
+
+                        <div class="d-flex flex-wrap justify-content-between">
+                            <a href="/Message/MessageList" class="btn btn-light mb-2">
+                                <i class="fas fa-arrow-left mr-1"></i> Listeye Dön
+                            </a>
+                            <div>
+                                <a href="mailto:@Model.MessageEmail?subject=Re: @Model.MessageSubject" class="btn btn-primary mb-2">
+                                    <i class="fas fa-reply mr-1"></i> Yanıtla
+                                </a>
+                                <a href="/Message/MessageChangeStatus/@Model.MessageID"
+                                   class="btn @(Model.MessageStatus ? "btn-warning" : "btn-success") mb-2">
+                                    <i class="fas @(Model.MessageStatus ? "fa-undo" : "fa-check") mr-1"></i>
+                                    @(Model.MessageStatus ? "Okunmadı Yap" : "Okundu Yap")
+                                </a>
+                                <a href="/Message/MessageDelete/@Model.MessageID" class="btn btn-danger mb-2"
+                                   onclick="return confirm('Bu mesajı silmek istediğine emin misin?')">
+                                    <i class="fas fa-trash mr-1"></i> Sil
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -30,6 +30,8 @@ namespace ApiProjectCamp.WebApi.Controllers
 		public IActionResult MessageCreate(CreateMessageDto createMessageDto)
 		{
 			var value = _mapper.Map<Message>(createMessageDto);
+			value.MessageSendDate = DateTime.Now;
+			value.MessageStatus = false;
 			_context.Messages.Add(value);
 			_context.SaveChanges();
 			return Ok();
@@ -67,6 +69,15 @@ namespace ApiProjectCamp.WebApi.Controllers
 			var value = _mapper.Map<List<Message>>
 				(_context.Messages.Where(x => x.MessageStatus == false).ToList());
 			return Ok(value);
+		}
+
+		[HttpGet("MessageChangeStatus/{id}")]
+		public IActionResult MessageChangeStatus(int id)
+		{
+			var value = _context.Messages.Find(id);
+			value.MessageStatus = !value.MessageStatus;
+			_context.SaveChanges();
+			return Ok();
 		}
 	}
 }
