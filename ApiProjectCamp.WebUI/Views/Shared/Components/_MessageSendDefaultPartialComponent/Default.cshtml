@@ -1,0 +1,56 @@
+﻿@model CreateMessageDto
+
+<form asp-action="MessageSend"
+      method="post"
+      asp-controller="Message"
+      data-aos="fade-up">
+
+    <div class="row gy-4">
+
+        <div class="col-md-6">
+            <input type="text"
+                   asp-for="MessageNameSurname"
+                   class="form-control"
+                   placeholder="Adınız Soyadınız">
+        </div>
+
+        <div class="col-md-6">
+            <input type="email"
+                   asp-for="MessageEmail"
+                   class="form-control"
+                   placeholder="Email Adresiniz">
+        </div>
+
+        <div class="col-md-12">
+            <input type="text"
+                   asp-for="MessageSubject"
+                   class="form-control"
+                   placeholder="Konu">
+        </div>
+
+        <div class="col-md-12">
+            <textarea asp-for="MessageDetails"
+                      class="form-control"
+                      rows="6"
+                      placeholder="Mesajınız"></textarea>
+        </div>
+
+        <div class="col-md-12 text-center">
+            @if (TempData["MessageSent"] != null)
+            {
+                <div class="sent-message" style="display:block;">
+                    Mesajınız başarıyla gönderildi. Teşekkür ederiz!
+                </div>
+            }
+            @if (TempData["MessageError"] != null)
+            {
+                <div class="error-message" style="display:block;">
+                    Mesajınız gönderilemedi. Lütfen daha sonra tekrar deneyin.
+                </div>
+            }
+
+            <button type="submit">Mesajı Gönder</button>
+        </div>
+
+    </div>
+</form>

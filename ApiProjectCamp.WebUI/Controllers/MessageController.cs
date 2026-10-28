@@ -1,6 +1,7 @@
 ﻿using ApiProjectCamp.WebUI.Dtos.MessageDtos;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -45,6 +46,22 @@ namespace ApiProjectCamp.WebUI.Controllers
 				return RedirectToAction("MessageList");
 			}
 			return View();
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> MessageSend(CreateMessageDto createMessageDto)
+		{
+			var client = _httpClientFactory.CreateClient();
+			var jsonData = JsonConvert.SerializeObject(createMessageDto);
+			StringContent content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+			var responseMessage = await client.PostAsync("https://localhost:7246/api/Messages", content);
+
+			if (responseMessage.IsSuccessStatusCode)
+				TempData["MessageSent"] = true;
+			else
+				TempData["MessageError"] = true;
+
+			return RedirectToAction("Index", "Default", null, "contact");
 		}
 
 
