@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /ApiProjectCamp.WebUI/wwwroot
 /ApiProjectCamp.WebUI/Controllers/AIController.cs
 /ApiProjectCamp.WebUI/Views/AI/Index.cshtml
+/ApiProjectCamp.WebUI/Models/ChatHub.cs
