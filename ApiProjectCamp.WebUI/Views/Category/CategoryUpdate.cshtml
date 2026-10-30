@@ -5,25 +5,276 @@
     Layout = "~/Views/AdminLayout/Index.cshtml";
 }
 
+<style>
+    .cat-hero {
+        background: linear-gradient(135deg, #ffa426 0%, #fc544b 100%);
+        border-radius: 12px;
+        color: #fff;
+        padding: 28px 32px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 24px rgba(252, 84, 75, .3);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .cat-hero::after {
+            content: "";
+            position: absolute;
+            right: -40px;
+            top: -40px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .13);
+        }
+
+        .cat-hero .hero-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .cat-hero h3 {
+            margin: 0 0 4px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .cat-hero p {
+            margin: 0;
+            opacity: .92;
+        }
+
+        .cat-hero .id-pill {
+            margin-left: auto;
+            background: rgba(255, 255, 255, .22);
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-weight: 700;
+            z-index: 1;
+        }
+
+    .big-input {
+        height: 56px;
+        font-size: 18px;
+        font-weight: 600;
+        border-radius: 10px;
+        padding-left: 18px;
+    }
+
+    .char-counter {
+        font-size: 12px;
+        color: #98a6ad;
+        text-align: right;
+        margin-top: 6px;
+    }
+
+        .char-counter.warn {
+            color: #fc544b;
+        }
+
+    .change-flag {
+        display: none;
+    }
+
+        .change-flag.show {
+            display: inline-block;
+        }
+
+    .preview-card {
+        border-top: 4px solid #ffa426;
+        position: sticky;
+        top: 90px;
+    }
+
+    .compare-row {
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin-bottom: 12px;
+    }
+
+        .compare-row .label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .compare-row .value {
+            font-size: 18px;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+    .compare-old {
+        background: #f6f7fb;
+        color: #98a6ad;
+    }
+
+        .compare-old .value {
+            text-decoration: line-through;
+        }
+
+        .compare-old.same .value {
+            text-decoration: none;
+            color: #34395e;
+        }
+
+    .compare-new {
+        background: #fff6e8;
+        color: #b36b00;
+        border: 1px solid #ffe2b3;
+    }
+
+        .compare-new .value {
+            color: #34395e;
+        }
+
+    .compare-arrow {
+        text-align: center;
+        color: #c1c7d6;
+        margin: -4px 0 8px;
+    }
+
+    .form-footer-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #f0f0f5;
+        padding-top: 20px;
+        margin-top: 10px;
+    }
+</style>
+
 <section class="section">
-    <div class="row justify-content-center">
-        <div class="col-10 col-md-10 col-lg-10">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Kategori Güncelle</h4>
-                </div>
-                <div class="card-body">
-                    <form asp-action="CategoryUpdate" method="post">
-                        <input type="hidden" asp-for="CategoryID" />
+
+    <div class="cat-hero">
+        <div class="hero-icon"><i class="fas fa-pen-to-square"></i></div>
+        <div>
+            <h3>Kategori Düzenle</h3>
+            <p>Adı değiştirin; farkı sağdaki karşılaştırma kartında anında görün.</p>
+        </div>
+        <div class="id-pill"># @Model.CategoryID</div>
+    </div>
+
+    <form asp-action="CategoryUpdate" method="post" id="categoryForm" novalidate>
+        <input type="hidden" asp-for="CategoryID" />
+
+        <div class="row">
+
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-body p-4">
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
                         <div class="form-group">
-                            <label asp-for="CategoryName">Kategori Adı</label>
-                            <input asp-for="CategoryName" class="form-control" placeholder="Örn: Başlangıçlar" />
+                            <label asp-for="CategoryName" class="font-weight-bold">
+                                Kategori Adı
+                                <span class="badge badge-warning ml-2 change-flag" id="changeFlag">Değişti</span>
+                            </label>
+                            <input asp-for="CategoryName" class="form-control big-input"
+                                   placeholder="Örn: Başlangıçlar" maxlength="50" autocomplete="off" autofocus />
+                            <div class="d-flex justify-content-between">
+                                <span asp-validation-for="CategoryName" class="text-danger small"></span>
+                                <div class="char-counter ml-auto"><span id="charCount">0</span> / 50</div>
+                            </div>
+                            <a href="#" id="btnReset" class="small text-muted" style="display:none;">
+                                <i class="fas fa-undo"></i> Eski haline döndür
+                            </a>
                         </div>
-                        <button type="submit" class="btn btn-primary">Güncelle</button>
-                        <a href="/Category/CategoryList" class="btn btn-secondary">Vazgeç</a>
-                    </form>
+
+                        <div class="form-footer-bar">
+                            <a href="/Category/CategoryList" class="btn btn-light">
+                                <i class="fas fa-arrow-left"></i> Vazgeç
+                            </a>
+                            <button type="submit" class="btn btn-warning btn-lg" id="btnSubmit">
+                                <i class="fas fa-save"></i> Değişiklikleri Kaydet
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
             </div>
+
+            <div class="col-lg-5">
+                <div class="card preview-card">
+                    <div class="card-header"><h4><i class="fas fa-code-compare mr-2"></i>Karşılaştırma</h4></div>
+                    <div class="card-body">
+                        <div class="compare-row compare-old same" id="oldBox">
+                            <div class="label">Mevcut ad</div>
+                            <div class="value" id="oldName"></div>
+                        </div>
+                        <div class="compare-arrow"><i class="fas fa-arrow-down"></i></div>
+                        <div class="compare-row compare-new">
+                            <div class="label">Yeni ad</div>
+                            <div class="value" id="newName"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </div>
+    </form>
 </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var input    = document.getElementById('CategoryName');
+            var original = input.value;
+            var oldName  = document.getElementById('oldName');
+            var oldBox   = document.getElementById('oldBox');
+            var newName  = document.getElementById('newName');
+            var counter  = document.getElementById('charCount');
+            var counterBox = counter.parentElement;
+            var flag     = document.getElementById('changeFlag');
+            var reset    = document.getElementById('btnReset');
+
+            oldName.textContent = original;
+
+            function refresh() {
+                var v = input.value.trim();
+                var changed = v !== original.trim();
+
+                counter.textContent = input.value.length;
+                counterBox.classList.toggle('warn', input.value.length >= 45);
+                newName.textContent = v || '—';
+
+                oldBox.classList.toggle('same', !changed);
+                flag.classList.toggle('show', changed);
+                reset.style.display = changed ? 'inline-block' : 'none';
+            }
+
+            input.addEventListener('input', refresh);
+
+            reset.addEventListener('click', function (e) {
+                e.preventDefault();
+                input.value = original;
+                refresh();
+                input.focus();
+            });
+
+            document.getElementById('categoryForm').addEventListener('submit', function () {
+                if (!window.jQuery || $(this).valid()) {
+                    var btn = document.getElementById('btnSubmit');
+                    btn.classList.add('btn-progress');
+                    setTimeout(function () { btn.disabled = true; }, 0);
+                }
+            });
+
+            refresh();
+        })();
+    </script>
+}

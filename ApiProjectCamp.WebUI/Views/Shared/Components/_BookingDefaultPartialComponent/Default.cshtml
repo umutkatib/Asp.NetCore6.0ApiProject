@@ -1,0 +1,55 @@
+﻿@model CreateReservationDto
+
+<section id="book-a-table" class="book-a-table section">
+
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Masa Rezervasyonu</h2>
+        <p><span>Sizin İçin</span> <span class="description-title">Yer Ayıralım<br></span></p>
+    </div><!-- End Section Title -->
+
+    <div class="container">
+
+        <div class="row g-0" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="col-lg-4 reservation-img" style="background-image: url('@Url.Content("~/yummy-red-1.0.0/assets/img/reservation.jpg")');"></div>
+
+            <div class="col-lg-8 d-flex align-items-center reservation-form-bg" data-aos="fade-up" data-aos-delay="200">
+                <form asp-controller="Reservation" asp-action="BookATable" method="post" role="form">
+                    <div class="row gy-4">
+                        <div class="col-lg-4 col-md-6">
+                            <input asp-for="ReservationNameSurname" class="form-control" placeholder="Adınız Soyadınız" />
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <input asp-for="ReservationEmail" type="email" class="form-control" placeholder="E-posta Adresiniz" />
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <input asp-for="ReservationPhone" class="form-control" placeholder="Telefon Numaranız" />
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <input asp-for="ReservationDate" type="date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <input asp-for="ReservationTime" type="time" class="form-control" />
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <input asp-for="ReservationCountOfPeople" type="number" min="1" class="form-control" placeholder="Kişi Sayısı" />
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <textarea asp-for="ReservationMessage" class="form-control" rows="5" placeholder="Mesajınız (alerji, özel istek vb.)"></textarea>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <div class="mb-3" style="color:var(--accent-color);">@TempData["ReservationMessage"]</div>
+                        <button type="submit">Masa Ayırt</button>
+                    </div>
+                </form>
+            </div><!-- End Reservation Form -->
+
+        </div>
+
+    </div>
+
+</section>

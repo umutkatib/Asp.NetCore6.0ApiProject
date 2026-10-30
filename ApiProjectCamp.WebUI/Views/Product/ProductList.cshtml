@@ -3,79 +3,497 @@
 @{
     ViewData["Title"] = "Ürün Listesi";
     Layout = "~/Views/AdminLayout/Index.cshtml";
-    int count = 0;
+    int total = Model?.Count ?? 0;
+    int activeCount = Model?.Count(x => x.ProductStatus) ?? 0;
+    int passiveCount = total - activeCount;
+    decimal avgPrice = total > 0 ? Model.Average(x => x.ProductPrice) : 0;
+    var categories = Model?.Select(x => x.CategoryName).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().OrderBy(x => x).ToList() ?? new List<string>();
+    int idx = 0;
 }
 
+<link rel="stylesheet" href="~/otika-bootstrap-admin-template/assets/bundles/datatables/datatables.min.css">
+<link rel="stylesheet" href="~/otika-bootstrap-admin-template/assets/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
+
+<style>
+    .stat-strip {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+    .stat-pill {
+        flex: 1 1 180px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+        .stat-pill .dot {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 14px;
+            font-size: 18px;
+        }
+
+        .stat-pill .num {
+            font-size: 22px;
+            font-weight: 800;
+            color: #34395e;
+            line-height: 1.1;
+        }
+
+        .stat-pill .lbl {
+            font-size: 12px;
+            color: #98a6ad;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+    .toolbar {
+        background: #fff;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 22px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+    .cat-chip {
+        display: inline-block;
+        padding: 6px 14px;
+        margin: 8px 6px 0 0;
+        border-radius: 20px;
+        background: #f3f4f9;
+        color: #6c757d;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .15s ease;
+        user-select: none;
+    }
+
+        .cat-chip:hover {
+            background: #e4e7ff;
+            color: #6777ef;
+        }
+
+        .cat-chip.active {
+            background: #6777ef;
+            color: #fff;
+        }
+
+    /* ===== TABLOYU KART IZGARASINA ÇEVİREN KISIM ===== */
+    #productTable {
+        display: block;
+        width: 100% !important;
+        border: 0;
+        margin: 0 !important;
+        visibility: hidden;
+    }
+
+        #productTable.ready {
+            visibility: visible;
+        }
+
+        #productTable thead {
+            display: none;
+        }
+
+        #productTable tbody {
+            display: grid;
+            gap: 22px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+
+            #productTable tbody tr {
+                display: block;
+                background: transparent !important;
+                border: 0;
+            }
+
+            #productTable tbody td {
+                display: block;
+                padding: 0 !important;
+                border: 0 !important;
+            }
+
+                #productTable tbody td.dataTables_empty {
+                    grid-column: 1 / -1;
+                    text-align: center;
+                    padding: 30px !important;
+                    background: #fff;
+                    border-radius: 12px;
+                    color: #98a6ad;
+                }
+    /* ================================================== */
+
+    .p-card {
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+        box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        transition: transform .2s ease, box-shadow .2s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .p-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(103,119,239,.18);
+        }
+
+        .p-card.passive .p-img img {
+            filter: grayscale(1);
+            opacity: .55;
+        }
+
+        .p-card.passive .p-name, .p-card.passive .p-price {
+            color: #98a6ad;
+        }
+
+    .p-img {
+        height: 170px;
+        background: linear-gradient(135deg, #eef0ff, #e3f6ff);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #b5bdf5;
+        font-size: 40px;
+    }
+
+        .p-img img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .p-cat {
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        background: rgba(255,255,255,.92);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #6777ef;
+        z-index: 2;
+    }
+
+    .p-status {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+        z-index: 2;
+    }
+
+    .p-actions {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 10px;
+        z-index: 2;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        background: linear-gradient(transparent, rgba(0,0,0,.55));
+        opacity: 0;
+        transform: translateY(8px);
+        transition: all .2s ease;
+    }
+
+    .p-card:hover .p-actions {
+        opacity: 1;
+        transform: none;
+    }
+
+    @@media (hover: none) {
+        .p-actions {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .p-body {
+        padding: 16px 18px 18px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .p-name {
+        font-size: 17px;
+        font-weight: 700;
+        color: #34395e;
+        margin-bottom: 6px;
+    }
+
+    .p-desc {
+        font-size: 13px;
+        color: #98a6ad;
+        flex: 1;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .p-price {
+        font-size: 20px;
+        font-weight: 800;
+        color: #6777ef;
+    }
+
+    .dt-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 26px;
+    }
+
+        .dt-footer .dataTables_paginate .pagination {
+            margin: 0;
+        }
+
+        .dt-footer .dataTables_info {
+            padding: 0;
+            color: #98a6ad;
+            font-size: 13px;
+        }
+</style>
+
 <section class="section">
-    <div class="row justify-content-center">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>Ürünler</h4>
-                    <a href="/Product/ProductCreate" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Yeni Ürün Ekle
-                    </a>
-                </div>
-                <div class="card-body">
 
-                    @if (Model == null || !Model.Any())
-                    {
-                        <div class="alert alert-info mb-0">Henüz ürün eklenmemiş.</div>
-                    }
-                    else
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover align-middle">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Görsel</th>
-                                        <th>Ürün Adı</th>
-                                        <th>Açıklama</th>
-                                        <th>Kategori</th>
-                                        <th>Fiyat</th>
-                                        <th>Durumu</th>
-                                        <th class="text-center">İşlemler</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model)
-                                    {
-                                        count++;
-                                        <tr>
-                                            <th scope="row">@count</th>
-                                            <td><img src="@item.ProductImageURl" alt="@item.ProductName" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" /></td>
-                                            <td>@item.ProductName</td>
-                                            <td>@item.ProductDescription</td>
-                                            <td>@item.CategoryName</td>
-                                            <td>@item.ProductPrice.ToString("N2") ₺</td>
-                                            <td>
-                                                <span class="badge badge-@(item.ProductStatus ? "success" : "secondary")">
-                                                    @(item.ProductStatus ? "Aktif" : "Pasif")
-                                                </span>
-                                            </td>
-                                            <td class="text-center text-nowrap">
-                                                <a href="/Product/ProductUpdate/@item.ProductID" class="btn btn-sm btn-warning" title="Güncelle">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="/Product/ProductChangeStatus/@item.ProductID"
-                                                   class="btn btn-sm @(item.ProductStatus ? "btn-secondary" : "btn-success")"
-                                                   title="@(item.ProductStatus ? "Pasif Yap" : "Aktif Yap")">
-                                                    <i class="fas @(item.ProductStatus ? "fa-eye-slash" : "fa-eye")"></i>
-                                                </a>
-                                                <a href="/Product/ProductDelete/@item.ProductID" class="btn btn-sm btn-danger" title="Sil">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+        <h4 class="mb-2 mb-md-0"><i class="fas fa-utensils mr-2 text-primary"></i>Ürünler</h4>
+        <a href="/Product/ProductCreate" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus"></i> Yeni Ürün Ekle
+        </a>
+    </div>
 
+    @if (Model == null || !Model.Any())
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="empty-state" data-height="320">
+                    <div class="empty-state-icon"><i class="fas fa-utensils"></i></div>
+                    <h2>Henüz ürün eklenmemiş</h2>
+                    <p class="lead">Menünüze ilk ürünü ekleyerek başlayın.</p>
+                    <a href="/Product/ProductCreate" class="btn btn-primary mt-4"><i class="fas fa-plus"></i> Yeni Ürün Ekle</a>
                 </div>
             </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <div class="stat-strip">
+            <div class="stat-pill">
+                <div class="dot bg-primary"><i class="fas fa-box"></i></div>
+                <div><div class="num">@total</div><div class="lbl">Toplam Ürün</div></div>
+            </div>
+            <div class="stat-pill">
+                <div class="dot bg-success"><i class="fas fa-check"></i></div>
+                <div><div class="num">@activeCount</div><div class="lbl">Aktif</div></div>
+            </div>
+            <div class="stat-pill">
+                <div class="dot bg-secondary"><i class="fas fa-eye-slash"></i></div>
+                <div><div class="num">@passiveCount</div><div class="lbl">Pasif</div></div>
+            </div>
+            <div class="stat-pill">
+                <div class="dot bg-warning"><i class="fas fa-lira-sign"></i></div>
+                <div><div class="num">@avgPrice.ToString("N2") ₺</div><div class="lbl">Ortalama Fiyat</div></div>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <div class="row">
+                <div class="col-md-4 mb-2 mb-md-0">
+                    <div class="input-group">
+                        <div class="input-group-prepend"><div class="input-group-text"><i class="fas fa-search"></i></div></div>
+                        <input type="text" id="productSearch" class="form-control" placeholder="Ürün ara...">
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2 mb-md-0">
+                    <select id="statusFilter" class="form-control">
+                        <option value="">Tüm Durumlar</option>
+                        <option value="Aktif">Aktif</option>
+                        <option value="Pasif">Pasif</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2 mb-md-0">
+                    <select id="sortSelect" class="form-control">
+                        <option value="5:asc">Varsayılan sıra</option>
+                        <option value="1:asc">Ad (A → Z)</option>
+                        <option value="1:desc">Ad (Z → A)</option>
+                        <option value="3:asc">Fiyat (Artan)</option>
+                        <option value="3:desc">Fiyat (Azalan)</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="pageSize" class="form-control">
+                        <option value="12">12 / sayfa</option>
+                        <option value="24">24 / sayfa</option>
+                        <option value="48">48 / sayfa</option>
+                    </select>
+                </div>
+            </div>
+            <div id="chipBar">
+                <span class="cat-chip active" data-cat="">Tümü</span>
+                @foreach (var c in categories)
+                {
+                    <span class="cat-chip" data-cat="@c">@c</span>
+                }
+            </div>
+        </div>
+
+        <table id="productTable">
+            <thead>
+                <tr>
+                    <th>Kart</th>
+                    <th>Ad</th>
+                    <th>Kategori</th>
+                    <th>Fiyat</th>
+                    <th>Durum</th>
+                    <th>Sıra</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    idx++;
+                    <tr>
+                        <td>
+                            <div class="p-card @(item.ProductStatus ? "" : "passive")">
+                                <div class="p-img">
+                                    <i class="fas fa-image"></i>
+                                    @if (!string.IsNullOrWhiteSpace(item.ProductImageURl))
+                                    {
+                                        <img src="@item.ProductImageURl" alt="@item.ProductName" loading="lazy" onerror="this.style.display='none'" />
+                                    }
+                                    <span class="p-cat">@item.CategoryName</span>
+                                    <span class="p-status badge badge-@(item.ProductStatus ? "success" : "secondary")">
+                                        @(item.ProductStatus ? "Aktif" : "Pasif")
+                                    </span>
+
+                                    <div class="p-actions">
+                                        <a href="/Product/ProductUpdate/@item.ProductID" class="btn btn-icon btn-sm btn-warning" title="Güncelle">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="/Product/ProductChangeStatus/@item.ProductID"
+                                           class="btn btn-icon btn-sm @(item.ProductStatus ? "btn-secondary" : "btn-success")"
+                                           title="@(item.ProductStatus ? "Pasif Yap" : "Aktif Yap")">
+                                            <i class="fas @(item.ProductStatus ? "fa-eye-slash" : "fa-eye")"></i>
+                                        </a>
+                                        <a href="/Product/ProductDelete/@item.ProductID" class="btn btn-icon btn-sm btn-danger btn-delete"
+                                           data-name="@item.ProductName" title="Sil">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="p-body">
+                                    <div class="p-name">@item.ProductName</div>
+                                    <div class="p-desc">@item.ProductDescription</div>
+                                    <div class="p-price">@item.ProductPrice.ToString("N2") ₺</div>
+                                </div>
+                            </div>
+                        </td>
+                        @* Aşağıdaki hücreler DataTables tarafından gizlenir; sadece sıralama/filtre içindir *@
+                        <td>@item.ProductName</td>
+                        <td>@item.CategoryName</td>
+                        <td data-order="@item.ProductPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)">@item.ProductPrice.ToString("N2")</td>
+                        <td>@(item.ProductStatus ? "Aktif" : "Pasif")</td>
+                        <td>@idx</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </section>
+
+@section Scripts {
+    <script src="~/otika-bootstrap-admin-template/assets/bundles/datatables/datatables.min.js"></script>
+    <script src="~/otika-bootstrap-admin-template/assets/bundles/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(function () {
+            if (!$('#productTable').length) return;
+
+            var table = $('#productTable').DataTable({
+                dom: 'rt<"dt-footer"ip>',          // kendi arama/uzunluk kontrollerimizi kullanıyoruz
+                pageLength: 12,
+                order: [[5, 'asc']],
+                columnDefs: [
+                    { targets: [1, 2, 3, 4, 5], visible: false },   // veri sütunları gizli
+                    { targets: [3, 5], searchable: false },
+                    { targets: 0, orderable: false }
+                ],
+                language: {
+                    info: '_TOTAL_ üründen _START_–_END_ arası gösteriliyor',
+                    infoEmpty: 'Kayıt yok',
+                    infoFiltered: '(_MAX_ ürün içinden filtrelendi)',
+                    zeroRecords: 'Filtrelerinizle eşleşen ürün bulunamadı.',
+                    paginate: { first: 'İlk', last: 'Son', next: '›', previous: '‹' }
+                },
+                initComplete: function () { $('#productTable').addClass('ready'); }
+            });
+
+            // Arama
+            $('#productSearch').on('input', function () {
+                table.search(this.value).draw();
+            });
+
+            // Durum filtresi (sütun 4)
+            $('#statusFilter').on('change', function () {
+                var v = $.fn.dataTable.util.escapeRegex(this.value);
+                table.column(4).search(v ? '^' + v + '$' : '', true, false).draw();
+            });
+
+            // Sıralama
+            $('#sortSelect').on('change', function () {
+                var p = this.value.split(':');
+                table.order([parseInt(p[0], 10), p[1]]).draw();
+            });
+
+            // Sayfa boyutu
+            $('#pageSize').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
+
+            // Kategori çipleri (sütun 2)
+            $('#chipBar').on('click', '.cat-chip', function () {
+                $('#chipBar .cat-chip').removeClass('active');
+                $(this).addClass('active');
+                var v = $.fn.dataTable.util.escapeRegex($(this).data('cat') || '');
+                table.column(2).search(v ? '^' + v + '$' : '', true, false).draw();
+            });
+
+            // Sayfa değişince yukarı kaydır
+            table.on('page.dt', function () {
+                $('html, body').animate({ scrollTop: $('.toolbar').offset().top - 90 }, 200);
+            });
+
+            // Silme onayı (sayfalama nedeniyle delegasyon şart)
+            $('#productTable').on('click', '.btn-delete', function (e) {
+                if (!confirm('"' + $(this).data('name') + '" ürününü silmek istediğinize emin misiniz?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

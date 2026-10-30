@@ -4,58 +4,143 @@
     ViewData["Title"] = "Kategori Listesi";
     Layout = "~/Views/AdminLayout/Index.cshtml";
     int count = 0;
+    int total = Model?.Count ?? 0;
+    int activeCount = Model?.Count(x => x.CategoryStatus) ?? 0;
+    int passiveCount = total - activeCount;
 }
 
 <section class="section">
+
+    @* ÖZET KARTLARI *@
+    <div class="row">
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card card-statistic-1">
+                <div class="card-icon bg-primary">
+                    <i class="fas fa-list"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header"><h4>Toplam Kategori</h4></div>
+                    <div class="card-body">@total</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card card-statistic-1">
+                <div class="card-icon bg-success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header"><h4>Aktif</h4></div>
+                    <div class="card-body">@activeCount</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card card-statistic-1">
+                <div class="card-icon bg-secondary">
+                    <i class="fas fa-eye-slash"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header"><h4>Pasif</h4></div>
+                    <div class="card-body">@passiveCount</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* LİSTE *@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>Kategoriler</h4>
-                    <a href="/Category/CategoryCreate" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Yeni Kategori Ekle
-                    </a>
+                <div class="card-header">
+                    <h4><i class="fas fa-tags mr-2"></i>Kategoriler</h4>
+                    <div class="card-header-action">
+                        <a href="/Category/CategoryCreate" class="btn btn-primary btn-icon icon-left">
+                            <i class="fas fa-plus"></i> Yeni Kategori Ekle
+                        </a>
+                    </div>
                 </div>
+
                 <div class="card-body">
 
                     @if (Model == null || !Model.Any())
                     {
-                        <div class="alert alert-info mb-0">Henüz kategori eklenmemiş.</div>
+                        <div class="empty-state" data-height="300">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-question"></i>
+                            </div>
+                            <h2>Henüz kategori eklenmemiş</h2>
+                            <p class="lead">
+                                Başlamak için ilk kategorini oluştur.
+                            </p>
+                            <a href="/Category/CategoryCreate" class="btn btn-primary mt-4">
+                                <i class="fas fa-plus"></i> Yeni Kategori Ekle
+                            </a>
+                        </div>
                     }
                     else
                     {
+                        @* ARAMA + FİLTRE *@
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-2 mb-md-0">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text"><i class="fas fa-search"></i></div>
+                                    </div>
+                                    <input type="text" id="categorySearch" class="form-control" placeholder="Kategori ara...">
+                                </div>
+                            </div>
+                            <div class="col-md-3 offset-md-3">
+                                <select id="statusFilter" class="form-control">
+                                    <option value="">Tüm Durumlar</option>
+                                    <option value="aktif">Aktif</option>
+                                    <option value="pasif">Pasif</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover align-middle">
+                            <table class="table table-striped table-hover align-middle" id="categoryTable">
                                 <thead>
                                     <tr>
-                                        <th scope="col">#</th>
+                                        <th scope="col" style="width:60px;">#</th>
                                         <th scope="col">Kategori Adı</th>
-                                        <th scope="col">Durumu</th>
-                                        <th scope="col" class="text-center">İşlemler</th>
+                                        <th scope="col" style="width:140px;">Durumu</th>
+                                        <th scope="col" class="text-center" style="width:180px;">İşlemler</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var item in Model)
                                     {
                                         count++;
-                                        <tr>
+                                        <tr data-name="@item.CategoryName.ToLower()" data-status="@(item.CategoryStatus ? "aktif" : "pasif")">
                                             <th scope="row">@count</th>
-                                            <td>@item.CategoryName</td>
                                             <td>
-                                                <span class="badge badge-@(item.CategoryStatus ? "success" : "secondary")">
-                                                    @(item.CategoryStatus ? "Aktif" : "Pasif")
-                                                </span>
+                                                <strong>@item.CategoryName</strong>
+                                            </td>
+                                            <td>
+                                                @if (item.CategoryStatus)
+                                                {
+                                                    <div class="badge badge-success"><i class="fas fa-check mr-1"></i>Aktif</div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="badge badge-secondary"><i class="fas fa-ban mr-1"></i>Pasif</div>
+                                                }
                                             </td>
                                             <td class="text-center text-nowrap">
-                                                <a href="/Category/CategoryUpdate/@item.CategoryID" class="btn btn-sm btn-warning" title="Güncelle">
+                                                <a href="/Category/CategoryUpdate/@item.CategoryID"
+                                                   class="btn btn-icon btn-sm btn-warning" title="Güncelle">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <a href="/Category/CategoryChangeStatus/@item.CategoryID"
-                                                   class="btn btn-sm @(item.CategoryStatus ? "btn-secondary" : "btn-success")"
+                                                   class="btn btn-icon btn-sm @(item.CategoryStatus ? "btn-secondary" : "btn-success")"
                                                    title="@(item.CategoryStatus ? "Pasif Yap" : "Aktif Yap")">
                                                     <i class="fas @(item.CategoryStatus ? "fa-eye-slash" : "fa-eye")"></i>
                                                 </a>
-                                                <a href="/Category/CategoryDelete/@item.CategoryID" class="btn btn-sm btn-danger" title="Sil">
+                                                <a href="/Category/CategoryDelete/@item.CategoryID"
+                                                   class="btn btn-icon btn-sm btn-danger btn-delete" title="Sil"
+                                                   data-name="@item.CategoryName">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </td>
@@ -64,10 +149,58 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <div id="noResult" class="alert alert-light text-center mt-3" style="display:none;">
+                            Aramanızla eşleşen kategori bulunamadı.
+                        </div>
                     }
 
                 </div>
+
+                @if (Model != null && Model.Any())
+                {
+                    <div class="card-footer text-right">
+                        <small class="text-muted">Toplam <strong>@total</strong> kategori listeleniyor.</small>
+                    </div>
+                }
             </div>
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        // Arama + durum filtresi
+        (function () {
+            var $search = $('#categorySearch');
+            var $filter = $('#statusFilter');
+
+            function applyFilter() {
+                var text = ($search.val() || '').toLowerCase().trim();
+                var status = $filter.val();
+                var visible = 0;
+
+                $('#categoryTable tbody tr').each(function () {
+                    var matchName = $(this).data('name').indexOf(text) > -1;
+                    var matchStatus = !status || $(this).data('status') === status;
+                    var show = matchName && matchStatus;
+                    $(this).toggle(show);
+                    if (show) visible++;
+                });
+
+                $('#noResult').toggle(visible === 0);
+            }
+
+            $search.on('keyup', applyFilter);
+            $filter.on('change', applyFilter);
+        })();
+
+        // Silme onayı
+        $('.btn-delete').on('click', function (e) {
+            var name = $(this).data('name');
+            if (!confirm('"' + name + '" kategorisini silmek istediğinize emin misiniz?')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+}

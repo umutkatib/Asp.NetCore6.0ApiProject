@@ -5,24 +5,254 @@
     Layout = "~/Views/AdminLayout/Index.cshtml";
 }
 
+<style>
+    .cat-hero {
+        background: linear-gradient(135deg, #6777ef 0%, #3abaf4 100%);
+        border-radius: 12px;
+        color: #fff;
+        padding: 28px 32px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 24px rgba(103, 119, 239, .35);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .cat-hero::after {
+            content: "";
+            position: absolute;
+            right: -40px;
+            top: -40px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .12);
+        }
+
+        .cat-hero .hero-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .cat-hero h3 {
+            margin: 0 0 4px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .cat-hero p {
+            margin: 0;
+            opacity: .9;
+        }
+
+    .big-input {
+        height: 56px;
+        font-size: 18px;
+        font-weight: 600;
+        border-radius: 10px;
+        padding-left: 18px;
+    }
+
+    .char-counter {
+        font-size: 12px;
+        color: #98a6ad;
+        text-align: right;
+        margin-top: 6px;
+    }
+
+        .char-counter.warn {
+            color: #fc544b;
+        }
+
+    .chip {
+        display: inline-block;
+        padding: 6px 14px;
+        margin: 0 6px 8px 0;
+        border-radius: 20px;
+        background: #f0f2ff;
+        color: #6777ef;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px dashed #c3caff;
+        transition: all .15s ease;
+        user-select: none;
+    }
+
+        .chip:hover {
+            background: #6777ef;
+            color: #fff;
+            border-style: solid;
+            transform: translateY(-1px);
+        }
+
+    .preview-card {
+        border-top: 4px solid #6777ef;
+        position: sticky;
+        top: 90px;
+    }
+
+    .preview-tile {
+        border: 2px dashed #e3e6ef;
+        border-radius: 14px;
+        padding: 28px 20px;
+        text-align: center;
+        background: #fafbff;
+    }
+
+        .preview-tile .tile-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6777ef, #3abaf4);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .preview-tile .tile-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #34395e;
+            word-break: break-word;
+        }
+
+            .preview-tile .tile-name.empty {
+                color: #c1c7d6;
+                font-weight: 500;
+            }
+
+    .form-footer-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #f0f0f5;
+        padding-top: 20px;
+        margin-top: 10px;
+    }
+</style>
+
 <section class="section">
-    <div class="row justify-content-center">
-        <div class="col-10 col-md-10 col-lg-10">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Yeni Kategori Ekle</h4>
-                </div>
-                <div class="card-body">
-                    <form asp-action="CategoryCreate" method="post">
-                        <div class="form-group">
-                            <label asp-for="CategoryName">Kategori Adı</label>
-                            <input asp-for="CategoryName" class="form-control" placeholder="Örn: Başlangıçlar" />
-                        </div>
-                        <button type="submit" class="btn btn-primary">Oluştur</button>
-                        <a href="/Category/CategoryList" class="btn btn-secondary">Vazgeç</a>
-                    </form>
-                </div>
-            </div>
+
+    <div class="cat-hero">
+        <div class="hero-icon"><i class="fas fa-layer-group"></i></div>
+        <div>
+            <h3>Yeni Kategori</h3>
+            <p>Menünüze yeni bir bölüm ekleyin. Yazdıkça sağdaki önizlemeyi görebilirsiniz.</p>
         </div>
     </div>
+
+    <form asp-action="CategoryCreate" method="post" id="categoryForm" novalidate>
+        <div class="row">
+
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-body p-4">
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="form-group">
+                            <label asp-for="CategoryName" class="font-weight-bold">Kategori Adı</label>
+                            <input asp-for="CategoryName" class="form-control big-input"
+                                   placeholder="Örn: Başlangıçlar" maxlength="50" autocomplete="off" autofocus />
+                            <div class="d-flex justify-content-between">
+                                <span asp-validation-for="CategoryName" class="text-danger small"></span>
+                                <div class="char-counter ml-auto"><span id="charCount">0</span> / 50</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="text-muted small text-uppercase font-weight-bold">Hızlı seçim</label>
+                            <div>
+                                <span class="chip" data-fill="Başlangıçlar">Başlangıçlar</span>
+                                <span class="chip" data-fill="Çorbalar">Çorbalar</span>
+                                <span class="chip" data-fill="Ana Yemekler">Ana Yemekler</span>
+                                <span class="chip" data-fill="Izgaralar">Izgaralar</span>
+                                <span class="chip" data-fill="Salatalar">Salatalar</span>
+                                <span class="chip" data-fill="Tatlılar">Tatlılar</span>
+                                <span class="chip" data-fill="İçecekler">İçecekler</span>
+                            </div>
+                        </div>
+
+                        <div class="form-footer-bar">
+                            <a href="/Category/CategoryList" class="btn btn-light">
+                                <i class="fas fa-arrow-left"></i> Listeye Dön
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg" id="btnSubmit">
+                                <i class="fas fa-check"></i> Kategoriyi Oluştur
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card preview-card">
+                    <div class="card-header"><h4><i class="fas fa-eye mr-2"></i>Önizleme</h4></div>
+                    <div class="card-body">
+                        <div class="preview-tile">
+                            <div class="tile-icon"><i class="fas fa-utensils"></i></div>
+                            <div class="tile-name empty" id="previewName">Kategori adı burada görünecek</div>
+                            <div class="mt-3"><span class="badge badge-success">Aktif</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
 </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var input   = document.getElementById('CategoryName');
+            var preview = document.getElementById('previewName');
+            var counter = document.getElementById('charCount');
+            var counterBox = counter.parentElement;
+            var placeholderText = 'Kategori adı burada görünecek';
+
+            function refresh() {
+                var v = input.value.trim();
+                counter.textContent = input.value.length;
+                counterBox.classList.toggle('warn', input.value.length >= 45);
+                preview.textContent = v || placeholderText;
+                preview.classList.toggle('empty', !v);
+            }
+
+            input.addEventListener('input', refresh);
+
+            document.querySelectorAll('.chip').forEach(function (chip) {
+                chip.addEventListener('click', function () {
+                    input.value = chip.getAttribute('data-fill');
+                    input.dispatchEvent(new Event('input'));
+                    input.focus();
+                });
+            });
+
+            document.getElementById('categoryForm').addEventListener('submit', function () {
+                if (!window.jQuery || $(this).valid()) {
+                    var btn = document.getElementById('btnSubmit');
+                    btn.classList.add('btn-progress');
+                    setTimeout(function () { btn.disabled = true; }, 0);
+                }
+            });
+
+            refresh();
+        })();
+    </script>
+}

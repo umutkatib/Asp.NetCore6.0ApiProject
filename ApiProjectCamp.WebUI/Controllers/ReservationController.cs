@@ -35,6 +35,7 @@ namespace ApiProjectCamp.WebUI.Controllers
 		[HttpPost]
 		public async Task<IActionResult> ReservationCreate(CreateReservationDto createReservationDto)
 		{
+			
 			var client = _httpClientFactory.CreateClient();
 			var jsonData = JsonConvert.SerializeObject(createReservationDto);
 			StringContent content = new StringContent(jsonData, Encoding.UTF8, "application/json");
@@ -44,6 +45,21 @@ namespace ApiProjectCamp.WebUI.Controllers
 				return RedirectToAction("ReservationList");
 			}
 			return View();
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> BookATable(CreateReservationDto createReservationDto)
+		{
+			var client = _httpClientFactory.CreateClient();
+			var jsonData = JsonConvert.SerializeObject(createReservationDto);
+			StringContent content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+			var responseMessage = await client.PostAsync("https://localhost:7246/api/Reservations", content);
+
+			TempData["ReservationMessage"] = responseMessage.IsSuccessStatusCode
+				? "Rezervasyon talebiniz alındı. Onay için sizi arayacağız veya e-posta göndereceğiz. Teşekkür ederiz!"
+				: "Rezervasyon gönderilemedi, lütfen bilgilerinizi kontrol edip tekrar deneyin.";
+
+			return RedirectToAction("Index", "Default", null, "book-a-table");
 		}
 
 

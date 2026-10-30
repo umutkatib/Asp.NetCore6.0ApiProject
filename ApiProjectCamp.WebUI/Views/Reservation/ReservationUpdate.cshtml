@@ -1,59 +1,206 @@
 ﻿@model UpdateReservationDto
 
 @{
-    ViewData["Title"] = "Rezervasyon Güncelleme";
+    ViewData["Title"] = "Rezervasyon Güncelle";
     Layout = "~/Views/AdminLayout/Index.cshtml";
+    var initial = !string.IsNullOrEmpty(Model?.ReservationNameSurname) ? Model.ReservationNameSurname.Substring(0, 1).ToUpper() : "?";
 }
 
 <section class="section">
-    <div class="row justify-content-center">
-        <div class="col-10 col-md-10 col-lg-10">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Rezervasyon Güncelle</h4>
-                </div>
-                <div class="card-body">
-                    <form asp-action="ReservationUpdate" method="post">
-                        <input type="hidden" asp-for="ReservationID" />
+    <div class="section-body">
+        <div class="row">
 
-                        <div class="form-group">
-                            <label asp-for="ReservationNameSurname">Ad Soyad</label>
-                            <input asp-for="ReservationNameSurname" class="form-control" />
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-md-6">
-                                <label asp-for="ReservationPhone">Telefon</label>
-                                <input asp-for="ReservationPhone" type="tel" class="form-control" />
+            <!-- SOL ALAN: CANLI ÖNİZLEME KARTI -->
+            <div class="col-12 col-md-4 col-lg-4 mb-4">
+                <div class="card card-warning sticky-top" style="top: 80px;">
+                    <div class="card-header">
+                        <h4><i class="fas fa-eye mr-2"></i> Canlı Önizleme</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Müşteri Profil Başlığı -->
+                        <div class="text-center mb-4">
+                            <div id="previewAvatar" class="avatar avatar-xl bg-warning text-white mb-3 shadow-sm font-weight-bold"
+                                 style="width: 75px; height: 75px; font-size: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
+                                @initial
                             </div>
-                            <div class="form-group col-md-6">
-                                <label asp-for="ReservationEmail">E-posta</label>
-                                <input asp-for="ReservationEmail" type="email" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-md-4">
-                                <label asp-for="ReservationDate">Tarih</label>
-                                <input asp-for="ReservationDate" type="date" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label asp-for="ReservationTime">Saat</label>
-                                <input asp-for="ReservationTime" type="time" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label asp-for="ReservationCountOfPeople">Kişi Sayısı</label>
-                                <input asp-for="ReservationCountOfPeople" type="number" min="1" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="ReservationMessage">Mesaj</label>
-                            <textarea asp-for="ReservationMessage" class="form-control" rows="3"></textarea>
+                            <h5 id="previewName" class="text-dark font-weight-600 mb-1">@Model.ReservationNameSurname</h5>
+                            <span class="badge badge-info badge-shadow">
+                                <i class="fas fa-edit mr-1"></i> Kayıt #@Model.ReservationID
+                            </span>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Güncelle</button>
-                        <a href="/Reservation/ReservationList" class="btn btn-secondary">Vazgeç</a>
-                    </form>
+                        <hr>
+
+                        <!-- Tarih, Saat, Kişi Özet Kutusu -->
+                        <div class="p-3 bg-light rounded mb-3">
+                            <div class="row text-center">
+                                <div class="col-6 border-right">
+                                    <small class="text-muted d-block"><i class="far fa-calendar-alt mr-1"></i> Tarih</small>
+                                    <strong id="previewDate" class="text-dark">@Model.ReservationDate.ToString("dd.MM.yyyy")</strong>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block"><i class="far fa-clock mr-1"></i> Saat & Kişi</small>
+                                    <strong id="previewTimeCount" class="text-dark">@Model.ReservationTime (@Model.ReservationCountOfPeople Kişi)</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- İletişim Detayları -->
+                        <div class="mb-3 font-13">
+                            <div class="mb-2">
+                                <i class="fas fa-phone mr-2 text-muted"></i>
+                                <span id="previewPhone" class="text-dark">@(string.IsNullOrEmpty(Model.ReservationPhone) ? "Telefon girilmedi" : Model.ReservationPhone)</span>
+                            </div>
+                            <div>
+                                <i class="fas fa-envelope mr-2 text-muted"></i>
+                                <span id="previewEmail" class="text-dark">@(string.IsNullOrEmpty(Model.ReservationEmail) ? "E-posta girilmedi" : Model.ReservationEmail)</span>
+                            </div>
+                        </div>
+
+                        <!-- Canlı Not Alanı -->
+                        <div class="alert alert-secondary p-2 mb-0 font-12 text-dark">
+                            <i class="fas fa-comment-dots mr-1 text-primary"></i>
+                            <em id="previewMessage">@(string.IsNullOrEmpty(Model.ReservationMessage) ? "Henüz bir not yazılmadı..." : "\"" + Model.ReservationMessage + "\"")</em>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- SAĞ ALAN: FORM -->
+            <div class="col-12 col-md-8 col-lg-8">
+                <div class="card card-warning">
+                    <div class="card-header">
+                        <h4><i class="fas fa-pen-square mr-2"></i> Güncelleme Formu</h4>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="ReservationUpdate" method="post">
+                            <input type="hidden" asp-for="ReservationID" />
+
+                            <div class="form-group">
+                                <label asp-for="ReservationNameSurname">Ad Soyad <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text"><i class="fas fa-user"></i></div>
+                                    </div>
+                                    <input asp-for="ReservationNameSurname" id="inputName" class="form-control" required />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label asp-for="ReservationPhone">Telefon Numarası <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text"><i class="fas fa-phone"></i></div>
+                                        </div>
+                                        <input asp-for="ReservationPhone" id="inputPhone" type="tel" class="form-control" required />
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label asp-for="ReservationEmail">E-posta Adresi</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text"><i class="fas fa-envelope"></i></div>
+                                        </div>
+                                        <input asp-for="ReservationEmail" id="inputEmail" type="email" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label asp-for="ReservationDate">Tarih <span class="text-danger">*</span></label>
+                                    <input asp-for="ReservationDate" id="inputDate" type="date" class="form-control" value="@Model.ReservationDate.ToString("yyyy-MM-dd")" required />
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label asp-for="ReservationTime">Saat <span class="text-danger">*</span></label>
+                                    <input asp-for="ReservationTime" id="inputTime" type="time" class="form-control" required />
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label asp-for="ReservationCountOfPeople">Kişi Sayısı <span class="text-danger">*</span></label>
+                                    <input asp-for="ReservationCountOfPeople" id="inputCount" type="number" min="1" class="form-control" required />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="ReservationMessage">Özel Not / Mesaj</label>
+                                <textarea asp-for="ReservationMessage" id="inputMessage" class="form-control" rows="3"></textarea>
+                            </div>
+
+                            <div class="card-footer bg-whitesmoke text-right px-0 pb-0">
+                                <a href="/Reservation/ReservationList" class="btn btn-secondary btn-icon icon-left mr-2">
+                                    <i class="fas fa-arrow-left"></i> Vazgeç
+                                </a>
+                                <button type="submit" class="btn btn-warning btn-icon icon-left shadow-sm">
+                                    <i class="fas fa-sync-alt"></i> Değişiklikleri Kaydet
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
+
+<!-- CANLI ÖNİZLEME SCRIPT KODLARI -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // Ad Soyad ve Avatar
+            $('#inputName').on('input keyup', function () {
+                var val = $(this).val().trim();
+                if (val.length > 0) {
+                    $('#previewName').text(val);
+                    $('#previewAvatar').text(val.charAt(0).toUpperCase());
+                } else {
+                    $('#previewName').text('Ad Soyad Girilmedi');
+                    $('#previewAvatar').text('?');
+                }
+            });
+
+            // Telefon
+            $('#inputPhone').on('input keyup', function () {
+                var val = $(this).val().trim();
+                $('#previewPhone').text(val.length > 0 ? val : 'Telefon girilmedi');
+            });
+
+            // E-posta
+            $('#inputEmail').on('input keyup', function () {
+                var val = $(this).val().trim();
+                $('#previewEmail').text(val.length > 0 ? val : 'E-posta girilmedi');
+            });
+
+            // Tarih (Formatlama)
+            $('#inputDate').on('change input', function () {
+                var val = $(this).val();
+                if (val) {
+                    var parts = val.split('-');
+                    if (parts.length === 3) {
+                        $('#previewDate').text(parts[2] + '.' + parts[1] + '.' + parts[0]);
+                    }
+                } else {
+                    $('#previewDate').text('--.--.----');
+                }
+            });
+
+            // Saat ve Kişi Sayısı
+            function updateTimeAndCount() {
+                var time = $('#inputTime').val() || '--:--';
+                var count = $('#inputCount').val() || '1';
+                $('#previewTimeCount').text(time + ' (' + count + ' Kişi)');
+            }
+            $('#inputTime, #inputCount').on('input change keyup', updateTimeAndCount);
+
+            // Mesaj / Not
+            $('#inputMessage').on('input keyup', function () {
+                var val = $(this).val().trim();
+                $('#previewMessage').text(val.length > 0 ? '"' + val + '"' : 'Henüz bir not yazılmadı...');
+            });
+
+        });
+    </script>
+}

@@ -1,80 +1,238 @@
 ﻿@model List<ResultReservationDto>
 
 @{
-    ViewData["Title"] = "Rezervasyonlar";
+    ViewData["Title"] = "Rezervasyon Yönetimi";
     Layout = "~/Views/AdminLayout/Index.cshtml";
+
+    var totalCount = Model?.Count ?? 0;
+    var approvedCount = Model?.Count(x => x.ReservationStatus) ?? 0;
+    var pendingCount = Model?.Count(x => !x.ReservationStatus) ?? 0;
+    var totalGuests = Model?.Sum(x => x.ReservationCountOfPeople) ?? 0;
 }
 
+<!-- DataTable CSS (Layout'a dokunmamak için doğrudan buraya eklendi) -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+
 <section class="section">
-    <div class="row justify-content-center">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>Rezervasyon Listesi</h4>
-                    <a href="/Reservation/ReservationCreate" class="btn btn-primary">Yeni Rezervasyon</a>
+    <div class="section-body">
+        
+        <!-- ÜST İSTATİSTİK KARTLARI -->
+        <div class="row">
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <div class="card card-statistic-1">
+                    <div class="card-icon l-bg-purple">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="padding-20">
+                            <div class="text-right">
+                                <h3 class="font-light mb-0">@totalCount</h3>
+                                <span class="text-muted">Toplam Rezervasyon</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    @if (Model == null || !Model.Any())
-                    {
-                        <div class="alert alert-info text-center mb-0">
-                            Henüz kayıtlı rezervasyon bulunmuyor.
+            </div>
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <div class="card card-statistic-1">
+                    <div class="card-icon l-bg-green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="padding-20">
+                            <div class="text-right">
+                                <h3 class="font-light mb-0">@approvedCount</h3>
+                                <span class="text-muted">Onaylanan</span>
+                            </div>
                         </div>
-                    }
-                    else
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Ad Soyad</th>
-                                        <th>Telefon</th>
-                                        <th>E-posta</th>
-                                        <th>Tarih</th>
-                                        <th>Saat</th>
-                                        <th>Kişi</th>
-                                        <th>Mesaj</th>
-                                        <th>Durum</th>
-                                        <th>İşlemler</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model)
-                                    {
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <div class="card card-statistic-1">
+                    <div class="card-icon l-bg-orange">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="padding-20">
+                            <div class="text-right">
+                                <h3 class="font-light mb-0">@pendingCount</h3>
+                                <span class="text-muted">Bekleyen</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <div class="card card-statistic-1">
+                    <div class="card-icon l-bg-cyan">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="padding-20">
+                            <div class="text-right">
+                                <h3 class="font-light mb-0">@totalGuests</h3>
+                                <span class="text-muted">Toplam Konuk Sayısı</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REZERVASYON TABLOSU KARTI -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-primary">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4><i class="fas fa-list mr-2"></i> Rezervasyon Listesi</h4>
+                        <a href="/Reservation/ReservationCreate" class="btn btn-icon icon-left btn-primary shadow-sm">
+                            <i class="fas fa-plus"></i> Yeni Rezervasyon Ekle
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                        @if (Model == null || !Model.Any())
+                        {
+                            <div class="p-5 text-center">
+                                <div class="empty-state" data-height="250">
+                                    <div class="empty-state-icon bg-danger text-white">
+                                        <i class="fas fa-calendar-times"></i>
+                                    </div>
+                                    <h2>Henüz Kayıtlı Rezervasyon Bulunmuyor</h2>
+                                    <p class="lead">Sisteme ilk rezervasyonu eklemek için aşağıdaki butonu kullanabilirsiniz.</p>
+                                    <a href="/Reservation/ReservationCreate" class="btn btn-primary mt-4">Yeni Rezervasyon Ekle</a>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="reservationTable" style="width:100%;">
+                                    <thead>
                                         <tr>
-                                            <td>@item.ReservationID</td>
-                                            <td>@item.ReservationNameSurname</td>
-                                            <td>@item.ReservationPhone</td>
-                                            <td>@item.ReservationEmail</td>
-                                            <td>@item.ReservationDate.ToString("dd.MM.yyyy")</td>
-                                            <td>@item.ReservationTime</td>
-                                            <td>@item.ReservationCountOfPeople</td>
-                                            <td>@item.ReservationMessage</td>
-                                            <td>
-                                                <span class="badge bg-@(item.ReservationStatus ? "success" : "warning")">@(item.ReservationStatus ? "Onaylandı" : "Beklemede")</span>
-                                            </td>
-                                            
-                                            <td class="text-center text-nowrap">
-                                                <a href="/Reservation/ReservationUpdate/@item.ReservationID" class="btn btn-sm btn-primary" title="Güncelle">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="/Reservation/ReservationChangeStatus/@item.ReservationID"
-                                                   class="btn btn-sm @(item.ReservationStatus ? "btn-secondary" : "btn-success")"
-                                                   title="@(item.ReservationStatus ? "İptal Et" : "Onayla")">
-                                                    <i class="fas @(item.ReservationStatus ? "fa-eye-slash" : "fa-eye")"></i>
-                                                </a>
-                                                <a href="/Reservation/ReservationDelete/@item.ReservationID" class="btn btn-sm btn-danger" title="Sil">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            </td>
+                                            <th class="text-center">#</th>
+                                            <th>Ad Soyad</th>
+                                            <th>İletişim Bilgileri</th>
+                                            <th>Tarih & Saat</th>
+                                            <th class="text-center">Kişi Sayısı</th>
+                                            <th>Mesaj / Not</th>
+                                            <th class="text-center">Durum</th>
+                                            <th class="text-center">İşlemler</th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td class="text-center font-weight-bold">#@item.ReservationID</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <figure class="avatar mr-2 bg-primary text-white font-weight-bold" data-initial="@(!string.IsNullOrEmpty(item.ReservationNameSurname) ? item.ReservationNameSurname.Substring(0, 1).ToUpper() : "?")"></figure>
+                                                        <div>
+                                                            <div class="font-weight-600">@item.ReservationNameSurname</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="small">
+                                                        <div><i class="fas fa-phone mr-1 text-muted"></i> @item.ReservationPhone</div>
+                                                        <div><i class="fas fa-envelope mr-1 text-muted"></i> @item.ReservationEmail</div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-outline-dark">
+                                                        <i class="far fa-calendar-alt mr-1"></i>@item.ReservationDate.ToString("dd.MM.yyyy")
+                                                    </span>
+                                                    <small class="text-muted d-block mt-1">
+                                                        <i class="far fa-clock mr-1"></i>@item.ReservationTime
+                                                    </small>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge badge-light shadow-sm">
+                                                        <i class="fas fa-user-friends mr-1"></i> @item.ReservationCountOfPeople Kişi
+                                                    </span>
+                                                </td>
+                                                <td style="max-width: 200px;">
+                                                    @if (!string.IsNullOrEmpty(item.ReservationMessage))
+                                                    {
+                                                        <span class="d-inline-block text-truncate" style="max-width: 180px;" data-toggle="tooltip" title="@item.ReservationMessage">
+                                                            @item.ReservationMessage
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted font-italic">Not yok</span>
+                                                    }
+                                                </td>
+                                                <td class="text-center">
+                                                    @if (item.ReservationStatus)
+                                                    {
+                                                        <span class="badge badge-success badge-shadow">
+                                                            <i class="fas fa-check mr-1"></i> Onaylandı
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-warning badge-shadow">
+                                                            <i class="fas fa-hourglass-half mr-1"></i> Beklemede
+                                                        </span>
+                                                    }
+                                                </td>
+                                                <td class="text-center text-nowrap">
+                                                    <a href="/Reservation/ReservationUpdate/@item.ReservationID" 
+                                                       class="btn btn-sm btn-outline-primary btn-icon" 
+                                                       data-toggle="tooltip" 
+                                                       title="Düzenle">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    
+                                                    <a href="/Reservation/ReservationChangeStatus/@item.ReservationID"
+                                                       class="btn btn-sm @(item.ReservationStatus ? "btn-outline-warning" : "btn-outline-success") btn-icon"
+                                                       data-toggle="tooltip"
+                                                       title="@(item.ReservationStatus ? "Beklemeye Al / İptal Et" : "Rezervasyonu Onayla")">
+                                                        <i class="fas @(item.ReservationStatus ? "fas fa-times" : "fas fa-check")"></i>
+                                                    </a>
+
+                                                    <a href="/Reservation/ReservationDelete/@item.ReservationID" 
+                                                       class="btn btn-sm btn-outline-danger btn-icon" 
+                                                       onclick="return confirm('Bu rezervasyonu silmek istediğinize emin misiniz?');"
+                                                       data-toggle="tooltip" 
+                                                       title="Sil">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- DataTable JS Kütüphaneleri (Layout'unuzda RenderSection("Scripts", ...) var olduğu için bu kısım sorunsuz çalışacaktır) -->
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Tooltip'leri aktif et
+            $('[data-toggle="tooltip"]').tooltip();
+
+            // DataTable'ı başlat
+            $('#reservationTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Turkish.json"
+                },
+                "columnDefs": [
+                    { "orderable": false, "targets": 7 } // İşlemler sütununda sıralamayı kapat
+                ]
+            });
+        });
+    </script>
+}

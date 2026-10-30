@@ -32,6 +32,12 @@ namespace ApiProjectCamp.WebApi.Controllers
 			return Ok(_mapper.Map<List<ResultProductDto>>(_context.Products.ToList()));
 		}
 
+		[HttpGet("ProductListJust9Count")]
+		public IActionResult ProductListJust9Count()
+		{
+			return Ok(_mapper.Map<List<ResultProductDto>>(_context.Products.Take(9).ToList()));
+		}
+
 		[HttpPost]
 		public IActionResult ProductCreate(CreateProductDto createProductDto)
 		{

@@ -5,44 +5,299 @@
     Layout = "~/Views/AdminLayout/Index.cshtml";
 }
 
+<style>
+    .edit-side {
+        position: sticky;
+        top: 90px;
+    }
+
+    .img-frame {
+        height: 260px;
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        background: linear-gradient(135deg, #fff3e0, #ffe0dd);
+        color: #f2b38a;
+        font-size: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .img-frame img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .img-frame .id-tag {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            z-index: 2;
+            background: rgba(0,0,0,.55);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .img-frame .new-tag {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            z-index: 2;
+            display: none;
+        }
+
+    .price-input {
+        font-size: 22px;
+        font-weight: 800;
+        height: 54px;
+    }
+
+    .price-addon {
+        font-size: 20px;
+        font-weight: 700;
+        background: #fff3e0;
+        color: #e08600;
+    }
+
+    .delta {
+        font-size: 13px;
+        font-weight: 700;
+        display: none;
+    }
+
+        .delta.up {
+            color: #fc544b;
+        }
+
+        .delta.down {
+            color: #28a745;
+        }
+
+    .char-counter {
+        font-size: 12px;
+        color: #98a6ad;
+    }
+
+    .field-changed {
+        border-color: #ffa426 !important;
+        box-shadow: 0 0 0 3px rgba(255,164,38,.15) !important;
+    }
+
+    .save-bar {
+        position: sticky;
+        bottom: 18px;
+        z-index: 50;
+        margin-top: 8px;
+        background: #34395e;
+        color: #fff;
+        border-radius: 14px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        box-shadow: 0 12px 32px rgba(52,57,94,.4);
+        transform: translateY(20px);
+        opacity: 0;
+        pointer-events: none;
+        transition: all .25s ease;
+    }
+
+        .save-bar.show {
+            transform: none;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .save-bar .msg i {
+            color: #ffa426;
+            margin-right: 8px;
+        }
+</style>
+
 <section class="section">
-    <div class="row justify-content-center">
-        <div class="col-10 col-md-10 col-lg-10">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Ürün Güncelle</h4>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <div>
+            <h4 class="mb-1"><i class="fas fa-pen mr-2 text-warning"></i>Ürün Güncelle</h4>
+            <div class="text-muted">Değiştirdiğiniz alanlar turuncu çerçeveyle işaretlenir.</div>
+        </div>
+        <a href="/Product/ProductList" class="btn btn-light mt-2 mt-md-0"><i class="fas fa-arrow-left"></i> Listeye Dön</a>
+    </div>
+
+    <form asp-action="ProductUpdate" method="post" id="productForm" novalidate>
+        <input type="hidden" asp-for="ProductID" />
+
+        <div class="row">
+
+            <div class="col-lg-4 mb-4">
+                <div class="card edit-side">
+                    <div class="card-body">
+                        <div class="img-frame">
+                            <i class="fas fa-image" id="frameIcon"></i>
+                            <img id="frameImg" alt="" style="display:none;" />
+                            <span class="id-tag"># @Model.ProductID</span>
+                            <span class="badge badge-warning new-tag" id="newImgTag">Yeni görsel</span>
+                        </div>
+
+                        <div class="form-group mt-4 mb-0">
+                            <label asp-for="ProductImageURl">Görsel Yolu</label>
+                            <input asp-for="ProductImageURl" class="form-control" autocomplete="off"
+                                   placeholder="/yummy-red-1.0.0/assets/img/menu/menu-item-1.png" />
+                            <span asp-validation-for="ProductImageURl" class="text-danger small"></span>
+                            <small id="imgHint" class="form-text text-muted"></small>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form asp-action="ProductUpdate" method="post">
-                        <input type="hidden" asp-for="ProductID" />
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header"><h4><i class="fas fa-list-ul mr-2"></i>Ürün Bilgileri</h4></div>
+                    <div class="card-body p-4">
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="form-group">
                             <label asp-for="ProductName">Ürün Adı</label>
-                            <input asp-for="ProductName" class="form-control" />
+                            <input asp-for="ProductName" class="form-control form-control-lg" autocomplete="off" />
+                            <span asp-validation-for="ProductName" class="text-danger small"></span>
                         </div>
+
                         <div class="form-group">
                             <label asp-for="ProductDescription">Açıklama</label>
-                            <textarea asp-for="ProductDescription" class="form-control" rows="3"></textarea>
+                            <textarea asp-for="ProductDescription" class="form-control" rows="4" maxlength="200"></textarea>
+                            <div class="d-flex justify-content-between">
+                                <span asp-validation-for="ProductDescription" class="text-danger small"></span>
+                                <div class="char-counter ml-auto"><span id="descCount">0</span> / 200</div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label asp-for="ProductPrice">Fiyat (₺)</label>
-                            <input asp-for="ProductPrice" type="number" step="0.01" class="form-control" />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="ProductPrice">Fiyat</label>
+                                    <div class="input-group">
+                                        <input asp-for="ProductPrice" type="number" step="0.01" min="0" class="form-control price-input" />
+                                        <div class="input-group-append"><span class="input-group-text price-addon">₺</span></div>
+                                    </div>
+                                    <span class="delta" id="priceDelta"></span>
+                                    <span asp-validation-for="ProductPrice" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CategoryID">Kategori</label>
+                                    <select asp-for="CategoryID" class="form-control" style="height:54px;"
+                                            asp-items="@((List<SelectListItem>)ViewBag.categoryValues)">
+                                        <option value="">Kategori seçin</option>
+                                    </select>
+                                    <span asp-validation-for="CategoryID" class="text-danger small"></span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label asp-for="ProductImageURl">Görsel Yolu</label>
-                            <input asp-for="ProductImageURl" class="form-control" placeholder="/yummy-red-1.0.0/assets/img/menu/menu-item-1.png" />
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="CategoryID">Kategori</label>
-                            <select asp-for="CategoryID" class="form-control" asp-items="@((List<SelectListItem>)ViewBag.categoryValues)">
-                                <option value="">Kategori seçin</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Güncelle</button>
-                        <a href="/Product/ProductList" class="btn btn-secondary">Vazgeç</a>
-                    </form>
+
+                    </div>
+                </div>
+
+                <div class="save-bar" id="saveBar">
+                    <div class="msg"><i class="fas fa-exclamation-circle"></i><span id="changeCount"></span></div>
+                    <div class="mt-2 mt-sm-0">
+                        <button type="button" class="btn btn-sm btn-outline-light mr-1" id="btnRevert">
+                            <i class="fas fa-undo"></i> Değişenleri geri al
+                        </button>
+                        <button type="submit" class="btn btn-warning" id="btnSubmit">
+                            <i class="fas fa-save"></i> Kaydet
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-right mt-3" id="staticActions">
+                    <a href="/Product/ProductList" class="btn btn-light mr-1">Vazgeç</a>
+                    <button type="submit" class="btn btn-warning btn-lg"><i class="fas fa-save"></i> Güncelle</button>
                 </div>
             </div>
+
         </div>
-    </div>
+    </form>
 </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var $ = function (id) { return document.getElementById(id); };
+            var fields = ['ProductName', 'ProductDescription', 'ProductPrice', 'ProductImageURl', 'CategoryID']
+                .map(function (id) { return $(id); });
+            var original = {};
+            fields.forEach(function (f) { original[f.id] = f.value; });
+
+            var frameImg = $('frameImg'), frameIcon = $('frameIcon');
+
+            function loadImage() {
+                var src = $('ProductImageURl').value.trim();
+                if (!src) { frameImg.style.display = 'none'; frameIcon.style.display = ''; return; }
+                frameImg.src = src;
+            }
+            frameImg.onload  = function () { frameImg.style.display = 'block'; frameIcon.style.display = 'none'; $('imgHint').textContent = ''; };
+            frameImg.onerror = function () { frameImg.style.display = 'none'; frameIcon.style.display = ''; $('imgHint').textContent = 'Bu yolda bir görsel bulunamadı.'; };
+
+            function refresh() {
+                var changed = 0;
+                fields.forEach(function (f) {
+                    var diff = f.value !== original[f.id];
+                    f.classList.toggle('field-changed', diff);
+                    if (diff) changed++;
+                });
+
+                $('descCount').textContent = $('ProductDescription').value.length;
+                $('newImgTag').style.display = $('ProductImageURl').value !== original.ProductImageURl ? 'inline-block' : 'none';
+
+                var oldP = parseFloat(original.ProductPrice), newP = parseFloat($('ProductPrice').value);
+                var delta = $('priceDelta');
+                if (!isNaN(oldP) && !isNaN(newP) && oldP !== newP) {
+                    var d = newP - oldP;
+                    delta.textContent = (d > 0 ? '▲ +' : '▼ ') + d.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ₺';
+                    delta.className = 'delta ' + (d > 0 ? 'up' : 'down');
+                    delta.style.display = 'block';
+                } else {
+                    delta.style.display = 'none';
+                }
+
+                $('saveBar').classList.toggle('show', changed > 0);
+                $('staticActions').style.display = changed > 0 ? 'none' : '';
+                $('changeCount').textContent = changed + ' alanda kaydedilmemiş değişiklik var';
+            }
+
+            fields.forEach(function (f) {
+                f.addEventListener('input', refresh);
+                f.addEventListener('change', refresh);
+            });
+            $('ProductImageURl').addEventListener('input', function () {
+                clearTimeout(this._t); this._t = setTimeout(loadImage, 400);
+            });
+
+            $('btnRevert').addEventListener('click', function () {
+                fields.forEach(function (f) { f.value = original[f.id]; });
+                loadImage(); refresh();
+            });
+
+            $('productForm').addEventListener('submit', function () {
+                if (!window.jQuery || $(this).valid()) {
+                    var btn = $('btnSubmit');
+                    btn.classList.add('btn-progress');
+                    setTimeout(function () { btn.disabled = true; }, 0);
+                }
+            });
+
+            loadImage(); refresh();
+        })();
+    </script>
+}

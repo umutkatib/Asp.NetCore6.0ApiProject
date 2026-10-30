@@ -17,7 +17,7 @@ namespace ApiProjectCamp.WebUI.ViewComponents.DefaultMenuPartialComponents
 		public async Task<IViewComponentResult> InvokeAsync()
 		{
 			var client = _httpClientFactory.CreateClient();
-			var responseMessage = await client.GetAsync("https://localhost:7246/api/Products");
+			var responseMessage = await client.GetAsync("https://localhost:7246/api/Products/ProductListJust9Count");
 			if (responseMessage.IsSuccessStatusCode)
 			{
 				var jsonData = await responseMessage.Content.ReadAsStringAsync();
